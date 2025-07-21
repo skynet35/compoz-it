@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : dim. 20 juil. 2025 à 19:03
+-- Généré le : lun. 21 juil. 2025 à 23:04
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.0.30
 
@@ -266,7 +266,7 @@ INSERT INTO `data` (`id`, `owner`, `name`, `manufacturer`, `package`, `pins`, `s
 (42, 1, '3.9V', 'PANASONIC', 'Mini-2 F-3B', 2, 'Yes', 8, NULL, 0, 0.31, 'http://fr.rs-online.com/web/p/diodes-zener/7602965/?searchTerm=7602965&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426736E3D5', 'RS 760-2965\nDZ2W03900L', 404, 'Yes', '', '', '2025-07-20 11:17:12', NULL, ''),
 (43, 1, 'STD12NF06L', 'ST MICRO', 'IPAK', 3, 'No', 5, 215, 0, 1.18, 'http://www.farnell.com/datasheets/2124337.pdf?_ga=1.161348413.1030846565.1451571627', 'Transistor MOSFET, Canal N, 12 A, 60 V, 10 V, 2 V\nFA:2629746 ', 1208, 'Yes', '', 'img/IPAK.jpg', '2025-07-20 11:17:12', NULL, ''),
 (44, 1, 'MCR100-8G', 'ON SEMICONDUCTOR', 'TO-92', 3, 'Yes', 4, 216, 0, 1.79, 'http://www.farnell.com/datasheets/675327.pdf?_ga=1.19863608.1030846565.1451571627', 'FA:9557288 \nThyristor, 600 V, 200 µA, 800 mA', 1207, 'Yes', '', 'img/TO-92.jpg', '2025-07-20 11:17:12', NULL, ''),
-(45, 1, 'NVRAM DS1220AD-200', 'MAXIM', 'TRAVERSANTE', 24, 'No', 1, 237, 0, 12.94, 'http://fr.rs-online.com/web/p/memoires-nvram/0132659/?searchTerm=132659&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426736E3D', 'RS 132-659\n16kbit, 4,5 -> 5,5 V, DIP 24 broches', 516, 'Yes', '', '', '2025-07-20 11:17:12', NULL, ''),
+(45, 1, 'NVRAM DS1220AD-200', 'MAXIM', 'TRAVERSANTE', 24, 'No', 1, 237, 0, 12.94, 'http://fr.rs-online.com/web/p/memoires-nvram/0132659/?searchTerm=132659&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426736E3D', 'RS 132-659\r\n16kbit, 4,5 -> 5,5 V, DIP 24 broches', 516, '1', NULL, 'img/NVRAM DS1220AD-200.jpg', '2025-07-20 11:17:12', NULL, NULL),
 (46, 1, 'BT137S 600V', 'NXP', 'TO-263', 3, 'Yes', 1, 238, 0, 0.83, 'http://www.farnell.com/datasheets/1758082.pdf', 'FA:1757883 ', 1206, 'Yes', '', 'img/TO-263 (D2PAK).jpg', '2025-07-20 11:17:12', NULL, ''),
 (47, 1, 'TC7660CPA', 'MICROSHIP', 'DIP-8', 8, 'No', 1, 239, 0, 0.83, 'http://fr.rs-online.com/web/p/convertisseurs-dc-dc/2070297/?searchTerm=2070297&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D31342', 'RS 207-0297\r\nEntrée 1.5V->10V; Sortie -1.5 -> -10V', 1103, '1', NULL, 'img/DIP-8.jpg', '2025-07-20 11:17:12', NULL, NULL),
 (48, 1, 'BZX585', 'NXP', 'SOD-523', 2, 'Yes', 24, 242, 0, 0.09, 'http://fr.rs-online.com/web/p/diodes-zener/7920992/', 'RS 792-0992\nDiode Zener NXP 1, Simple, 3.3V ', 404, 'Yes', '', 'img/SOD-523.jpg', '2025-07-20 11:17:12', NULL, ''),
@@ -291,7 +291,8 @@ INSERT INTO `data` (`id`, `owner`, `name`, `manufacturer`, `package`, `pins`, `s
 (70, 1, 'NTE240', 'NTE', 'TO-220', 3, 'No', 2, NULL, 0, 6.49, 'https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwjFjtvc-bTQAhXEvxQKHf-8Cc0QFgggMAA&url=http%3A%2F%2Fwww.nteinc.com%2Fspecs%2F2300to2399%2Fpdf%2Fnte2379.pdf&usg=AFQjCNEc3YC__Am3l8tO0JgSGO4OTvrrkQ&sig2=14bNqDJLZjN0NmI', 'MOSFET, 600 V; 6.2 A; 125 W;', 1208, '1', NULL, 'img/TO-220.jpg', '2025-07-20 13:47:46', NULL, NULL),
 (71, 1, '	74LS245', 'VISHAY', 'DIL-16', 2, 'No', 3, NULL, 0, 0.40, 'http://www.farnell.com/datasheets/1724877.pdf', 'FA:1187025 \n', 1502, 'Yes', '', 'img/DIP-16.jpg', '2025-07-20 13:47:46', NULL, ''),
 (72, 1, 'FQP3N80', 'FAIRCHILD', 'TO-220AC', 5, 'No', 10, NULL, 0, 0.72, 'http://www.promelec.ru/pdf/FQP3N60.pdf', 'FA:1848713', 1208, '1', NULL, 'img/TO-220AC.jpg', '2025-07-20 13:47:46', NULL, NULL),
-(73, 1, 'ULN2001', 'ANALOG DEVI', 'DIL-14', 14, 'No', 1, NULL, 0, 16.52, 'https://docs-emea.rs-online.com/webdocs/14f4/0900766b814f496a.pdf', 'Amplificateur à thermocouple, ±15V, 5 V 15kHz', 506, 'Yes', '', 'img/DIP-14.jpg', '2025-07-20 13:47:46', NULL, '');
+(73, 1, 'ULN2001', 'ANALOG DEVI', 'DIL-14', 14, 'No', 1, NULL, 0, 16.52, 'https://docs-emea.rs-online.com/webdocs/14f4/0900766b814f496a.pdf', 'Amplificateur à thermocouple, ±15V, 5 V 15kHz', 506, 'Yes', '', 'img/DIP-14.jpg', '2025-07-20 13:47:46', NULL, ''),
+(1000, 1, 'truc', NULL, 'DIP-8', 8, 'No', 3, 2, 0, NULL, NULL, NULL, 499, 'No', NULL, 'img/MSOP-8.png', '2025-07-21 08:58:03', 5, NULL);
 
 -- --------------------------------------------------------
 
@@ -749,7 +750,7 @@ CREATE TABLE `projects` (
 --
 
 INSERT INTO `projects` (`id`, `owner`, `name`, `description`, `image_path`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Ghostbusters', '', 'Projets/Ghostbusters/project_image_1752331141.png', 'En cours', '2025-07-12 09:13:39', '2025-07-12 14:39:01');
+(1, 1, 'Ghostbusters', '', 'img/img_687e0ac4c9b60.png', 'En cours', '2025-07-12 09:13:39', '2025-07-21 09:39:16');
 
 -- --------------------------------------------------------
 
@@ -803,10 +804,7 @@ CREATE TABLE `project_files` (
 
 INSERT INTO `project_files` (`id`, `project_id`, `file_name`, `original_name`, `display_name`, `file_path`, `file_type`, `file_size`, `file_category`, `description`, `uploaded_at`) VALUES
 (1, 1, 'Infineon_IRFB7430_DataSheet_v01_01_EN-1732586-2_1752330966_0.pdf', 'Infineon_IRFB7430_DataSheet_v01_01_EN-1732586-2.pdf', 'Infineon_IRFB7430.pdf', 'Projets/Ghostbusters/Infineon_IRFB7430_DataSheet_v01_01_EN-1732586-2_1752330966_0.pdf', 'application/pdf', 284865, 'datasheet', 'infineon', '2025-07-12 14:36:06'),
-(27, 1, 'Gemini_Generated_Image_v1yv1av1yv1av1yv_1752915275.png', 'Gemini_Generated_Image_v1yv1av1yv1av1yv.png', 'Gemini', 'projets/Ghostbusters/Gemini_Generated_Image_v1yv1av1yv1av1yv_1752915275.png', 'image/png', 324039, 'schema', '', '2025-07-19 08:54:35'),
-(28, 1, 'sscom5.13_.1__1752915433.zip', 'sscom5.13_.1_.zip', 'sscom5.13_.1_.zip', 'projets/Ghostbusters/sscom5.13_.1__1752915433.zip', 'application/x-zip-compressed', 420285, 'programme', '', '2025-07-19 08:57:13'),
-(29, 1, 'export_composants_2025-07-14_19-31-09_1752915777.csv', 'export_composants_2025-07-14_19-31-09.csv', 'export_composant.csv', 'projets/Ghostbusters/export_composants_2025-07-14_19-31-09_1752915777.csv', 'application/vnd.ms-excel', 3766, 'autre', '', '2025-07-19 09:02:57'),
-(30, 1, 'elecstock_1752918095.sql', 'elecstock.sql', 'elecstock.sql', 'projets/Ghostbusters/elecstock_1752918095.sql', 'application/octet-stream', 50627, 'programme', '', '2025-07-19 09:41:35');
+(31, 1, 'proton_1753090786.png', 'proton.png', 'proton.png', 'projets/Ghostbusters/proton_1753090786.png', 'image/png', 360359, 'photo', '', '2025-07-21 09:39:46');
 
 -- --------------------------------------------------------
 
@@ -908,7 +906,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `created_at`) VALUES
-
+(1, 'admin@compozit.fr', '$2y$10$njWFbV.JF.TJh1eXNPu5GO2lKGwNLuN0/6dlHOtZ1dQ16U9jfG0mq', '2025-07-05 21:32:59');
 
 --
 -- Index pour les tables déchargées
@@ -1019,7 +1017,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `data`
 --
 ALTER TABLE `data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1001;
 
 --
 -- AUTO_INCREMENT pour la table `location`
@@ -1043,7 +1041,7 @@ ALTER TABLE `packages`
 -- AUTO_INCREMENT pour la table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `project_components`
@@ -1055,7 +1053,7 @@ ALTER TABLE `project_components`
 -- AUTO_INCREMENT pour la table `project_files`
 --
 ALTER TABLE `project_files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT pour la table `project_items`
