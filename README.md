@@ -24,16 +24,16 @@ Un système de gestion de composants électroniques avec PHP et MySQL.
    - Lancer Apache et MySQL depuis le panneau de contrôle XAMPP
 
 2. **Placer les fichiers**
-   - Copier le dossier `Simple` dans `C:\xampp\htdocs\`
+   - Copier le dossier `compozit` dans `C:\xampp\htdocs\`
 
 3. **Configuration automatique**
    - La base de données et la table seront créées automatiquement au premier accès
-   - Nom de la base : `CompoZ'IT`
-   - Table : `users` (id, email, password, created_at)
+   - Nom de la base : `Compozit`
+   - Table : `users` (id, email, password, created_at) préenregistré: admin@compozit.fr / pass:compozit
 
 4. **Accéder à l'application**
    - Ouvrir votre navigateur
-   - Aller à : `http://localhost/Simple/`
+   - Aller à : `http://localhost/compozit`
 
 ## 🔧 Configuration
 
