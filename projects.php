@@ -418,6 +418,97 @@ try {
             margin-bottom: 15px;
         }
 
+        /* Styles pour la modal d'images */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .image-modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: black;
+        }
+
+        .upload-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .image-option {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .image-option:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .image-option.selected {
+            border-color: #667eea;
+            background-color: #f0f4ff;
+        }
+
+        .image-option img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .image-option-name {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #666;
+        }
+
+        .project-image-clickable {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .project-image-clickable:hover {
+            opacity: 0.8;
+        }
+
         @media (max-width: 768px) {
             .projects-grid {
                 grid-template-columns: 1fr;
@@ -425,6 +516,11 @@ try {
             
             .project-actions {
                 flex-direction: column;
+            }
+            
+            .image-modal-content {
+                width: 95%;
+                margin: 10% auto;
             }
         }
     </style>
@@ -515,9 +611,9 @@ try {
                         <div class="project-card">
                             <!-- Image du projet -->
                             <?php if (!empty($project['image_path']) && file_exists($project['image_path'])): ?>
-                                <img src="<?php echo htmlspecialchars($project['image_path']); ?>" alt="Image du projet" class="project-image">
+                                <img src="<?php echo htmlspecialchars($project['image_path']); ?>" alt="Image du projet" class="project-image project-image-clickable" onclick="openImageModal(<?php echo $project['id']; ?>)" title="Cliquer pour changer l'image">
                             <?php else: ?>
-                                <div class="project-image-placeholder">
+                                <div class="project-image-placeholder project-image-clickable" onclick="openImageModal(<?php echo $project['id']; ?>)" title="Cliquer pour ajouter une image">
                                     🚀
                                 </div>
                             <?php endif; ?>
@@ -563,6 +659,178 @@ try {
             <?php endif; ?>
         </div>
     </div>
+
+    <!-- Modal de sélection d'images -->
+    <div id="imageModal" class="image-modal">
+        <div class="image-modal-content">
+            <span class="close-modal" onclick="closeImageModal()">&times;</span>
+            <h3>Choisir une image pour le projet</h3>
+            <p>Sélectionnez une image du dossier /img ou importez une nouvelle image :</p>
+            
+            <div class="upload-section">
+                <h4>📤 Importer une nouvelle image</h4>
+                <input type="file" id="imageUpload" accept="image/*" onchange="uploadImage()">
+                <p style="margin-top: 10px; font-size: 14px; color: #666;">Formats acceptés: JPG, PNG, GIF, SVG, WebP (max 5MB)</p>
+            </div>
+            
+            <div>
+                <h4>🖼️ Images existantes</h4>
+                <div id="imageGrid" class="image-grid">
+                    <!-- Les images seront chargées ici par JavaScript -->
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="removeProjectImage()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">🗑️ Supprimer l'image</button>
+                <button onclick="closeImageModal()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProjectId = null;
+        let selectedImagePath = null;
+
+        function openImageModal(projectId) {
+            currentProjectId = projectId;
+            document.getElementById('imageModal').style.display = 'block';
+            loadImages();
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            currentProjectId = null;
+            selectedImagePath = null;
+        }
+
+        function loadImages() {
+            fetch('get_images.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.images) {
+                    const imageGrid = document.getElementById('imageGrid');
+                    imageGrid.innerHTML = '';
+                    
+                    data.images.forEach(image => {
+                        const imageOption = document.createElement('div');
+                        imageOption.className = 'image-option';
+                        imageOption.onclick = () => selectImage(image.path);
+                        
+                        imageOption.innerHTML = `
+                            <img src="${image.path}" alt="${image.name}">
+                            <div class="image-option-name">${image.name}</div>
+                        `;
+                        
+                        imageGrid.appendChild(imageOption);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des images:', error);
+            });
+        }
+
+        function selectImage(imagePath) {
+            // Désélectionner toutes les images
+            document.querySelectorAll('.image-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Sélectionner l'image cliquée
+            event.target.closest('.image-option').classList.add('selected');
+            selectedImagePath = imagePath;
+            
+            // Mettre à jour l'image du projet
+            updateProjectImage(imagePath);
+        }
+
+        function updateProjectImage(imagePath) {
+            if (!currentProjectId) return;
+            
+            fetch('update_project_image.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'project_id=' + currentProjectId + '&image_path=' + encodeURIComponent(imagePath)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Recharger la page pour voir les changements
+                    location.reload();
+                } else {
+                    alert('Erreur lors de la mise à jour de l\'image: ' + (data.error || 'Erreur inconnue'));
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la mise à jour de l\'image');
+            });
+        }
+
+        function uploadImage() {
+            const fileInput = document.getElementById('imageUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            fetch('upload_image.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour l'image du projet avec la nouvelle image
+                    updateProjectImage(data.image_path);
+                } else {
+                    alert('Erreur lors de l\'upload: ' + (data.error || 'Erreur inconnue'));
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'upload de l\'image');
+            });
+        }
+
+        function removeProjectImage() {
+            if (!currentProjectId) return;
+            
+            if (confirm('Êtes-vous sûr de vouloir supprimer l\'image de ce projet ?')) {
+                fetch('update_project_image.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'project_id=' + currentProjectId + '&image_path='
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erreur lors de la suppression de l\'image: ' + (data.error || 'Erreur inconnue'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la suppression de l\'image');
+                });
+            }
+        }
+
+        // Fermer la modal en cliquant en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeImageModal();
+            }
+        }
+    </script>
 
     <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
         Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
