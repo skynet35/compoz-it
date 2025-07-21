@@ -1,0 +1,239 @@
+2025-07-20 12:49:00 [DEBUG] Nombre de lignes à traiter: 20
+2025-07-20 12:49:00 [DEBUG] Ligne 1 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 2 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 3 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 4 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 5 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 6 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 7 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 8 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:00 [DEBUG] Traitement ligne 9 - Composant: BT137S 600V
+2025-07-20 12:49:00 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:49:00 [DEBUG] Ligne 10 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 11 ignorée - nombre de colonnes incorrect: 9 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 12 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 13 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 14 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 15 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 16 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 17 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 18 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 19 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:00 [DEBUG] Ligne 20 vide, ignorée
+2025-07-20 12:49:43 [DEBUG] Nombre de lignes à traiter: 20
+2025-07-20 12:49:43 [DEBUG] Ligne 1 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 2 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 3 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 4 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 5 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 6 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 7 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 8 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:43 [DEBUG] Traitement ligne 9 - Composant: BT137S 600V
+2025-07-20 12:49:43 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:49:43 [DEBUG] Ligne 10 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 11 ignorée - nombre de colonnes incorrect: 9 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 12 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 13 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 14 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 15 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 16 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 17 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 18 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 19 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:43 [DEBUG] Ligne 20 vide, ignorée
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Nombre de lignes à traiter: 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 1 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 2 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 3 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 4 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 5 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 6 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 7 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 8 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Traitement ligne 9 - Composant: BT137S 600V
+2025-07-20 12:49:50 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 10 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 11 ignorée - nombre de colonnes incorrect: 9 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 12 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 13 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 14 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 15 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 16 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 17 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 18 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 19 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:49:50 [DEBUG DOUBLONS] Ligne 20 vide, ignorée
+2025-07-20 12:51:00 [DEBUG] En-têtes CSV (20): ﻿id, owner, name, manufacturer, package, pins, smd, quantity, location_id, order_quantity, price, datasheet, comment, category, public, url, image_path, created_at, supplier_id, supplier_reference
+2025-07-20 12:51:00 [DEBUG] Nombre de lignes à traiter: 20
+2025-07-20 12:51:00 [DEBUG] Ligne 1 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [16, 1, 3.9V, PANASONIC, Mini2 F3B, 2, Yes, 8, B62-4, 0, 0.31, http://fr.rs-online.com/web/p/diodes-zener/7602965/?searchTerm=7602965&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426736E3D59, RS 760-2965]
+2025-07-20 12:51:01 [DEBUG] Ligne 2 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [DZ2W03900L", 404, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Ligne 3 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [17, 1, STD12NF06L, ST MICRO, IPAK, 3, No, 5, 215, 0, 1.18, http://www.farnell.com/datasheets/2124337.pdf?_ga=1.161348413.1030846565.1451571627, Transistor MOSFET, Canal N, 12 A, 60 V, 10 V, 2 V]
+2025-07-20 12:51:01 [DEBUG] Ligne 4 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [FA:2629746 ", 1208, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Ligne 5 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [18, 1, MCR100-8G, ON SEMICONDUCTOR, TO-92, 3, Yes, 4, 216, 0, 1.79, http://www.farnell.com/datasheets/675327.pdf?_ga=1.19863608.1030846565.1451571627, FA:9557288]
+2025-07-20 12:51:01 [DEBUG] Ligne 6 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [Thyristor, 600 V, 200 µA, 800 mA", 1207, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Ligne 7 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [19, 1, NVRAM DS1220AD-200, MAXIM, TRAVERSANTE, 24, No, 1, 237, 0, 12.94, http://fr.rs-online.com/web/p/memoires-nvram/0132659/?searchTerm=132659&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426736E3D5, RS 132-659]
+2025-07-20 12:51:01 [DEBUG] Ligne 8 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [16kbit, 4,5 -> 5,5 V, DIP 24 broches", 516, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Traitement ligne 9 - Composant: BT137S 600V
+2025-07-20 12:51:01 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:51:01 [DEBUG] Ligne 10 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [, 1, TC7660CPA, MICROSHIP, DIP-8, 8, No, 1, 239, 0, 0.83, http://fr.rs-online.com/web/p/convertisseurs-dc-dc/2070297/?searchTerm=2070297&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426, RS 207-0297]
+2025-07-20 12:51:01 [DEBUG] Ligne 11 ignorée - nombre de colonnes incorrect: 9 vs 20 - Contenu: [Entrée 1.5V->10V,  Sortie -1.5 -> -10V", 1103, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Ligne 12 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [, 1, BZX585, NXP, SOD-523, 2, Yes, 24, 242, 0, 0.09, http://fr.rs-online.com/web/p/diodes-zener/7920992/, RS 792-0992]
+2025-07-20 12:51:01 [DEBUG] Ligne 13 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [Diode Zener NXP 1, Simple, 3.3V ", 404, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Ligne 14 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [23, 1, MC3403L, TEXAS INSTRUMENT, DIP-14, 14, No, 2, 243, 0, 0.65, https://www.onsemi.com/pub/Collateral/MC3403-D.PDF,  RS 732-0718]
+2025-07-20 12:51:01 [DEBUG] Ligne 15 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [1MHz, 6 -> 28 V PDIP", 505, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Ligne 16 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [24, 1, 74HC02, TEXAS INSTRUMENT, DIP-14, 14, No, 1, 241, 0, , https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=8&cad=rja&uact=8&sqi=2&ved=0ahUKEwiB0LyngLXQAhULWBoKHebRC-AQFggxMAc&url=http%3A%2F%2Fwww.alliedelec.com%2Fm%2Fd%2Fcd9aeaca44b93193b61e9073c0a369b4.pdf&usg=AFQjCNGSPcwMIUyMcbZ6LWdUcdOi9ikOgA&sig2=, RS 442-909]
+2025-07-20 12:51:01 [DEBUG] Ligne 17 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [Porte Logique Quadruple, 2 -> 6 V", 502, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Ligne 18 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [25, 1, AS6C62256-55SIN, ALLIANCE MEMORY, SOIC-28, 28, Yes, 1, 244, 0, 1.66, http://www.mouser.com/ds/2/12/AS6C62256-8819.pdf, MO:913-AS6C62256-55SIN]
+2025-07-20 12:51:01 [DEBUG] Ligne 19 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [SRAM 256K, 2.7-5.5V, 55ns 32K x 8 Asynch SRAM", 516, Yes, , , , , ]
+2025-07-20 12:51:01 [DEBUG] Ligne 20 vide, ignorée
+2025-07-20 12:51:19 [DEBUG] En-têtes CSV (20): ﻿id, owner, name, manufacturer, package, pins, smd, quantity, location_id, order_quantity, price, datasheet, comment, category, public, url, image_path, created_at, supplier_id, supplier_reference
+2025-07-20 12:51:19 [DEBUG] Nombre de lignes à traiter: 20
+2025-07-20 12:51:19 [DEBUG] Ligne 1 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [16, 1, 3.9V, PANASONIC, Mini2 F3B, 2, Yes, 8, B62-4, 0, 0.31, http://fr.rs-online.com/web/p/diodes-zener/7602965/?searchTerm=7602965&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426736E3D59, RS 760-2965]
+2025-07-20 12:51:19 [DEBUG] Ligne 2 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [DZ2W03900L", 404, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Ligne 3 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [17, 1, STD12NF06L, ST MICRO, IPAK, 3, No, 5, 215, 0, 1.18, http://www.farnell.com/datasheets/2124337.pdf?_ga=1.161348413.1030846565.1451571627, Transistor MOSFET, Canal N, 12 A, 60 V, 10 V, 2 V]
+2025-07-20 12:51:19 [DEBUG] Ligne 4 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [FA:2629746 ", 1208, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Ligne 5 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [18, 1, MCR100-8G, ON SEMICONDUCTOR, TO-92, 3, Yes, 4, 216, 0, 1.79, http://www.farnell.com/datasheets/675327.pdf?_ga=1.19863608.1030846565.1451571627, FA:9557288]
+2025-07-20 12:51:19 [DEBUG] Ligne 6 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [Thyristor, 600 V, 200 µA, 800 mA", 1207, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Ligne 7 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [19, 1, NVRAM DS1220AD-200, MAXIM, TRAVERSANTE, 24, No, 1, 237, 0, 12.94, http://fr.rs-online.com/web/p/memoires-nvram/0132659/?searchTerm=132659&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426736E3D5, RS 132-659]
+2025-07-20 12:51:19 [DEBUG] Ligne 8 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [16kbit, 4,5 -> 5,5 V, DIP 24 broches", 516, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Traitement ligne 9 - Composant: BT137S 600V
+2025-07-20 12:51:19 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:51:19 [DEBUG] Ligne 10 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [, 1, TC7660CPA, MICROSHIP, DIP-8, 8, No, 1, 239, 0, 0.83, http://fr.rs-online.com/web/p/convertisseurs-dc-dc/2070297/?searchTerm=2070297&relevancy-data=636F3D3126696E3D4931384E525353746F636B4E756D6265724D504E266C753D656E266D6D3D6D61746368616C6C26706D3D5E5C647B367D247C5E5C647B377D247C5E5C647B31307D2426706F3D313426, RS 207-0297]
+2025-07-20 12:51:19 [DEBUG] Ligne 11 ignorée - nombre de colonnes incorrect: 9 vs 20 - Contenu: [Entrée 1.5V->10V,  Sortie -1.5 -> -10V", 1103, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Ligne 12 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [, 1, BZX585, NXP, SOD-523, 2, Yes, 24, 242, 0, 0.09, http://fr.rs-online.com/web/p/diodes-zener/7920992/, RS 792-0992]
+2025-07-20 12:51:19 [DEBUG] Ligne 13 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [Diode Zener NXP 1, Simple, 3.3V ", 404, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Ligne 14 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [23, 1, MC3403L, TEXAS INSTRUMENT, DIP-14, 14, No, 2, 243, 0, 0.65, https://www.onsemi.com/pub/Collateral/MC3403-D.PDF,  RS 732-0718]
+2025-07-20 12:51:19 [DEBUG] Ligne 15 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [1MHz, 6 -> 28 V PDIP", 505, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Ligne 16 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [24, 1, 74HC02, TEXAS INSTRUMENT, DIP-14, 14, No, 1, 241, 0, , https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=8&cad=rja&uact=8&sqi=2&ved=0ahUKEwiB0LyngLXQAhULWBoKHebRC-AQFggxMAc&url=http%3A%2F%2Fwww.alliedelec.com%2Fm%2Fd%2Fcd9aeaca44b93193b61e9073c0a369b4.pdf&usg=AFQjCNGSPcwMIUyMcbZ6LWdUcdOi9ikOgA&sig2=, RS 442-909]
+2025-07-20 12:51:19 [DEBUG] Ligne 17 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [Porte Logique Quadruple, 2 -> 6 V", 502, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Ligne 18 ignorée - nombre de colonnes incorrect: 13 vs 20 - Contenu: [25, 1, AS6C62256-55SIN, ALLIANCE MEMORY, SOIC-28, 28, Yes, 1, 244, 0, 1.66, http://www.mouser.com/ds/2/12/AS6C62256-8819.pdf, MO:913-AS6C62256-55SIN]
+2025-07-20 12:51:19 [DEBUG] Ligne 19 ignorée - nombre de colonnes incorrect: 8 vs 20 - Contenu: [SRAM 256K, 2.7-5.5V, 55ns 32K x 8 Asynch SRAM", 516, Yes, , , , , ]
+2025-07-20 12:51:19 [DEBUG] Ligne 20 vide, ignorée
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Nombre de lignes à traiter: 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 1 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 2 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 3 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 4 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 5 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 6 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 7 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 8 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Traitement ligne 9 - Composant: BT137S 600V
+2025-07-20 12:51:40 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 10 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 11 ignorée - nombre de colonnes incorrect: 9 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 12 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 13 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 14 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 15 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 16 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 17 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 18 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 19 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:51:40 [DEBUG DOUBLONS] Ligne 20 vide, ignorée
+2025-07-20 12:52:33 [DEBUG] En-têtes CSV (20): ﻿id, owner, name, manufacturer, package, pins, smd, quantity, location_id, order_quantity, price, datasheet, comment, category, public, url, image_path, created_at, supplier_id, supplier_reference
+2025-07-20 12:52:33 [DEBUG] Ligne d'en-tête brute: ﻿id;owner;name;manufacturer;package;pins;smd;quantity;location_id;order_quantity;price;datasheet;comment;category;public;url;image_path;created_at;supplier_id;supplier_reference
+2025-07-20 12:52:33 [DEBUG] Nombre de lignes à traiter: 20
+2025-07-20 12:52:33 [DEBUG] Ligne 1 - Données parsées (13 colonnes): 16 | 1 | 3.9V | PANASONIC | Mini2 F3B...
+2025-07-20 12:52:33 [DEBUG] Ligne 1 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: 16;1;3.9V;PANASONIC;Mini2 F3B;2;Yes;8;B62-4;0;0.31;http://fr.rs-online.com/web/p/diodes-zener/760296...
+2025-07-20 12:52:33 [DEBUG] Ligne 2 - Données parsées (8 colonnes): DZ2W03900L" | 404 | Yes |  | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 2 ignorée - nombre de colonnes incorrect: 8 vs 20 - Ligne brute: DZ2W03900L";404;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 3 - Données parsées (13 colonnes): 17 | 1 | STD12NF06L | ST MICRO | IPAK...
+2025-07-20 12:52:33 [DEBUG] Ligne 3 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: 17;1;STD12NF06L;ST MICRO;IPAK;3;No;5;215;0;1.18;http://www.farnell.com/datasheets/2124337.pdf?_ga=1....
+2025-07-20 12:52:33 [DEBUG] Ligne 4 - Données parsées (8 colonnes): FA:2629746 " | 1208 | Yes |  | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 4 ignorée - nombre de colonnes incorrect: 8 vs 20 - Ligne brute: FA:2629746 ";1208;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 5 - Données parsées (13 colonnes): 18 | 1 | MCR100-8G | ON SEMICONDUCTOR | TO-92...
+2025-07-20 12:52:33 [DEBUG] Ligne 5 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: 18;1;MCR100-8G;ON SEMICONDUCTOR;TO-92;3;Yes;4;216;0;1.79;http://www.farnell.com/datasheets/675327.pd...
+2025-07-20 12:52:33 [DEBUG] Ligne 6 - Données parsées (8 colonnes): Thyristor, 600 V, 200 µA, 800 mA" | 1207 | Yes |  | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 6 ignorée - nombre de colonnes incorrect: 8 vs 20 - Ligne brute: Thyristor, 600 V, 200 µA, 800 mA";1207;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 7 - Données parsées (13 colonnes): 19 | 1 | NVRAM DS1220AD-200 | MAXIM | TRAVERSANTE...
+2025-07-20 12:52:33 [DEBUG] Ligne 7 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: 19;1;NVRAM DS1220AD-200;MAXIM;TRAVERSANTE;24;No;1;237;0;12.94;http://fr.rs-online.com/web/p/memoires...
+2025-07-20 12:52:33 [DEBUG] Ligne 8 - Données parsées (8 colonnes): 16kbit, 4,5 -> 5,5 V, DIP 24 broches" | 516 | Yes |  | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 8 ignorée - nombre de colonnes incorrect: 8 vs 20 - Ligne brute: 16kbit, 4,5 -> 5,5 V, DIP 24 broches";516;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 9 - Données parsées (20 colonnes): 20 | 1 | BT137S 600V | NXP | TO-263...
+2025-07-20 12:52:33 [DEBUG] Traitement ligne 9 - Composant: BT137S 600V
+2025-07-20 12:52:33 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:52:33 [DEBUG] Ligne 10 - Données parsées (13 colonnes):  | 1 | TC7660CPA | MICROSHIP | DIP-8...
+2025-07-20 12:52:33 [DEBUG] Ligne 10 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: ;1;TC7660CPA;MICROSHIP;DIP-8;8;No;1;239;0;0.83;http://fr.rs-online.com/web/p/convertisseurs-dc-dc/20...
+2025-07-20 12:52:33 [DEBUG] Ligne 11 - Données parsées (9 colonnes): Entrée 1.5V->10V |  Sortie -1.5 -> -10V" | 1103 | Yes | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 11 ignorée - nombre de colonnes incorrect: 9 vs 20 - Ligne brute: Entrée 1.5V->10V; Sortie -1.5 -> -10V";1103;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 12 - Données parsées (13 colonnes):  | 1 | BZX585 | NXP | SOD-523...
+2025-07-20 12:52:33 [DEBUG] Ligne 12 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: ;1;BZX585;NXP;SOD-523;2;Yes;24;242;0;0.09;http://fr.rs-online.com/web/p/diodes-zener/7920992/;"RS 79...
+2025-07-20 12:52:33 [DEBUG] Ligne 13 - Données parsées (8 colonnes): Diode Zener NXP 1, Simple, 3.3V " | 404 | Yes |  | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 13 ignorée - nombre de colonnes incorrect: 8 vs 20 - Ligne brute: Diode Zener NXP 1, Simple, 3.3V ";404;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 14 - Données parsées (13 colonnes): 23 | 1 | MC3403L | TEXAS INSTRUMENT | DIP-14...
+2025-07-20 12:52:33 [DEBUG] Ligne 14 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: 23;1;MC3403L;TEXAS INSTRUMENT;DIP-14;14;No;2;243;0;0.65;https://www.onsemi.com/pub/Collateral/MC3403...
+2025-07-20 12:52:33 [DEBUG] Ligne 15 - Données parsées (8 colonnes): 1MHz, 6 -> 28 V PDIP" | 505 | Yes |  | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 15 ignorée - nombre de colonnes incorrect: 8 vs 20 - Ligne brute: 1MHz, 6 -> 28 V PDIP";505;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 16 - Données parsées (13 colonnes): 24 | 1 | 74HC02 | TEXAS INSTRUMENT | DIP-14...
+2025-07-20 12:52:33 [DEBUG] Ligne 16 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: 24;1;74HC02;TEXAS INSTRUMENT;DIP-14;14;No;1;241;0;;https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&so...
+2025-07-20 12:52:33 [DEBUG] Ligne 17 - Données parsées (8 colonnes): Porte Logique Quadruple, 2 -> 6 V" | 502 | Yes |  | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 17 ignorée - nombre de colonnes incorrect: 8 vs 20 - Ligne brute: Porte Logique Quadruple, 2 -> 6 V";502;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 18 - Données parsées (13 colonnes): 25 | 1 | AS6C62256-55SIN | ALLIANCE MEMORY | SOIC-28...
+2025-07-20 12:52:33 [DEBUG] Ligne 18 ignorée - nombre de colonnes incorrect: 13 vs 20 - Ligne brute: 25;1;AS6C62256-55SIN;ALLIANCE MEMORY;SOIC-28;28;Yes;1;244;0;1.66;http://www.mouser.com/ds/2/12/AS6C6...
+2025-07-20 12:52:33 [DEBUG] Ligne 19 - Données parsées (8 colonnes): SRAM 256K, 2.7-5.5V, 55ns 32K x 8 Asynch SRAM" | 516 | Yes |  | ...
+2025-07-20 12:52:33 [DEBUG] Ligne 19 ignorée - nombre de colonnes incorrect: 8 vs 20 - Ligne brute: SRAM 256K, 2.7-5.5V, 55ns 32K x 8 Asynch SRAM";516;Yes;;;;;
+2025-07-20 12:52:33 [DEBUG] Ligne 20 vide, ignorée
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Nombre de lignes à traiter: 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 1 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 2 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 3 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 4 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 5 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 6 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 7 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 8 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Traitement ligne 9 - Composant: BT137S 600V
+2025-07-20 12:52:42 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 10 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 11 ignorée - nombre de colonnes incorrect: 9 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 12 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 13 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 14 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 15 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 16 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 17 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 18 ignorée - nombre de colonnes incorrect: 13 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 19 ignorée - nombre de colonnes incorrect: 8 vs 20
+2025-07-20 12:52:42 [DEBUG DOUBLONS] Ligne 20 vide, ignorée
+2025-07-20 12:54:04 [DEBUG] En-têtes CSV (20): ﻿id, owner, name, manufacturer, package, pins, smd, quantity, location_id, order_quantity, price, datasheet, comment, category, public, url, image_path, created_at, supplier_id, supplier_reference
+2025-07-20 12:54:04 [DEBUG] Ligne 2 - Données parsées (20 colonnes): 16 | 1 | 3.9V | PANASONIC | Mini2 F3B...
+2025-07-20 12:54:04 [DEBUG] Traitement ligne 2 - Composant: 3.9V
+2025-07-20 12:54:04 [DEBUG] Importation du composant: 3.9V - ID: AUCUN
+2025-07-20 12:54:25 [DEBUG] En-têtes CSV (20): ﻿id, owner, name, manufacturer, package, pins, smd, quantity, location_id, order_quantity, price, datasheet, comment, category, public, url, image_path, created_at, supplier_id, supplier_reference
+2025-07-20 12:54:25 [DEBUG] Ligne 2 - Données parsées (20 colonnes): 16 | 1 | 3.9V | PANASONIC | Mini2 F3B...
+2025-07-20 12:54:25 [DEBUG] Traitement ligne 2 - Composant: 3.9V
+2025-07-20 12:54:25 [DEBUG] Importation du composant: 3.9V - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] En-têtes CSV (20): ﻿id, owner, name, manufacturer, package, pins, smd, quantity, location_id, order_quantity, price, datasheet, comment, category, public, url, image_path, created_at, supplier_id, supplier_reference
+2025-07-20 12:57:47 [DEBUG] Ligne 2 - Données parsées (20 colonnes): 16 | 1 | 3.9V | PANASONIC | Mini2 F3B...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 2 - Composant: 3.9V
+2025-07-20 12:57:47 [DEBUG] Importation du composant: 3.9V - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Location_id B62-4 n'existe pas pour l'utilisateur 1, mis à null
+2025-07-20 12:57:47 [DEBUG] Ligne 3 - Données parsées (20 colonnes): 17 | 1 | STD12NF06L | ST MICRO | IPAK...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 3 - Composant: STD12NF06L
+2025-07-20 12:57:47 [DEBUG] Importation du composant: STD12NF06L - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Ligne 4 - Données parsées (20 colonnes): 18 | 1 | MCR100-8G | ON SEMICONDUCTOR | TO-92...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 4 - Composant: MCR100-8G
+2025-07-20 12:57:47 [DEBUG] Importation du composant: MCR100-8G - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Ligne 5 - Données parsées (20 colonnes): 19 | 1 | NVRAM DS1220AD-200 | MAXIM | TRAVERSANTE...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 5 - Composant: NVRAM DS1220AD-200
+2025-07-20 12:57:47 [DEBUG] Importation du composant: NVRAM DS1220AD-200 - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Ligne 6 - Données parsées (20 colonnes): 20 | 1 | BT137S 600V | NXP | TO-263...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 6 - Composant: BT137S 600V
+2025-07-20 12:57:47 [DEBUG] Importation du composant: BT137S 600V - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Ligne 7 - Données parsées (20 colonnes):  | 1 | TC7660CPA | MICROSHIP | DIP-8...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 7 - Composant: TC7660CPA
+2025-07-20 12:57:47 [DEBUG] Importation du composant: TC7660CPA - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Ligne 8 - Données parsées (20 colonnes):  | 1 | BZX585 | NXP | SOD-523...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 8 - Composant: BZX585
+2025-07-20 12:57:47 [DEBUG] Importation du composant: BZX585 - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Ligne 9 - Données parsées (20 colonnes): 23 | 1 | MC3403L | TEXAS INSTRUMENT | DIP-14...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 9 - Composant: MC3403L
+2025-07-20 12:57:47 [DEBUG] Importation du composant: MC3403L - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Ligne 10 - Données parsées (20 colonnes): 24 | 1 | 74HC02 | TEXAS INSTRUMENT | DIP-14...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 10 - Composant: 74HC02
+2025-07-20 12:57:47 [DEBUG] Importation du composant: 74HC02 - ID: AUCUN
+2025-07-20 12:57:47 [DEBUG] Ligne 11 - Données parsées (20 colonnes): 25 | 1 | AS6C62256-55SIN | ALLIANCE MEMORY | SOIC-28...
+2025-07-20 12:57:47 [DEBUG] Traitement ligne 11 - Composant: AS6C62256-55SIN
+2025-07-20 12:57:47 [DEBUG] Importation du composant: AS6C62256-55SIN - ID: AUCUN
