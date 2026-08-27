@@ -90,7 +90,7 @@ Par défaut si tu importes **`compozit.sql`**, un compte admin existe déjà :
 
 | Email                 | Mot de passe |
 |-----------------------|-------------|
-| `admin@compozit.fr`   | `admin123`   |
+| `admin@compozit.fr`   | `compozit`   |
 
 👉 **Changez ce mot de passe immédiatement** dans `Profil` après connexion !**
 
