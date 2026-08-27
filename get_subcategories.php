@@ -1,11 +1,13 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
+
+header('Content-Type: application/json; charset=utf-8');
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['error' => 'Non autorisé']);
+    echo json_encode(['error' => 'Non autorisé', 'session_user_id' => ($_SESSION['user_id'] ?? 'NOT SET')]);
     exit;
 }
 

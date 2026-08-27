@@ -1,5 +1,8 @@
 <?php
-session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once 'session_init.php';
 require_once 'config.php';
 
 // Vérifier si l'utilisateur est connecté
@@ -8,36 +11,97 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$userId = $_SESSION['user_id'];
+$stats = [
+    'locations' => 0,
+    'suppliers' => 0,
+    'packages' => 0,
+    'manufacturers' => 0,
+    'components' => 0,
+    'projects' => 0,
+    'categories' => 0,
+    'images' => 0
+];
+$error = null;
+
 try {
     $pdo = getConnection();
     
-    // Récupérer les statistiques
-    $stats = [];
-    
     // Statistiques des emplacements
-    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM location WHERE owner = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    $stats['locations'] = $stmt->fetch()['count'];
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM location WHERE owner = ?");
+        $stmt->execute([$userId]);
+        $stats['locations'] = (int)$stmt->fetch()['count'];
+    } catch (Exception $e) {
+        $stats['locations'] = 0;
+    }
     
-    // Statistiques des fournisseurs
-    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM suppliers WHERE owner = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    $stats['suppliers'] = $stmt->fetch()['count'];
+    // Statistiques des fournisseurs (certaines tables n'ont pas owner = user, voir structure)
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM suppliers");
+        $stmt->execute();
+        $stats['suppliers'] = (int)$stmt->fetch()['count'];
+    } catch (Exception $e) {
+        $stats['suppliers'] = 0;
+    }
     
     // Statistiques des packages
-    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM packages WHERE owner = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    $stats['packages'] = $stmt->fetch()['count'];
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM packages");
+        $stmt->execute();
+        $stats['packages'] = (int)$stmt->fetch()['count'];
+    } catch (Exception $e) {
+        $stats['packages'] = 0;
+    }
     
-    // Statistiques des fabricants (depuis la table data)
-    $stmt = $pdo->prepare("SELECT COUNT(DISTINCT manufacturer) as count FROM data WHERE owner = ? AND manufacturer IS NOT NULL AND manufacturer != ''");
-    $stmt->execute([$_SESSION['user_id']]);
-    $stats['manufacturers'] = $stmt->fetch()['count'];
+    // Statistiques des fabricants (depuis la table manufacturers si elle existe, sinon depuis data)
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(DISTINCT name) as count FROM manufacturers");
+        $stmt->execute();
+        $stats['manufacturers'] = (int)$stmt->fetch()['count'];
+    } catch (Exception $e) {
+        try {
+            $stmt = $pdo->prepare("SELECT COUNT(DISTINCT manufacturer) as count FROM data WHERE owner = ? AND manufacturer IS NOT NULL AND manufacturer != ''");
+            $stmt->execute([$userId]);
+            $stats['manufacturers'] = (int)$stmt->fetch()['count'];
+        } catch (Exception $e2) {
+            $stats['manufacturers'] = 0;
+        }
+    }
     
     // Statistiques des composants
-    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM data WHERE owner = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    $stats['components'] = $stmt->fetch()['count'];
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM data WHERE owner = ?");
+        $stmt->execute([$userId]);
+        $stats['components'] = (int)$stmt->fetch()['count'];
+    } catch (Exception $e) {
+        $stats['components'] = 0;
+    }
+    
+    // Statistiques des projets
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM projects WHERE owner = ?");
+        $stmt->execute([$userId]);
+        $stats['projects'] = (int)$stmt->fetch()['count'];
+    } catch (Exception $e) {
+        $stats['projects'] = 0;
+    }
+    
+    // Statistiques des catégories
+    try {
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM category_sub");
+        $stats['categories'] = (int)$stmt->fetch()['count'];
+    } catch (Exception $e) {
+        $stats['categories'] = 0;
+    }
+    
+    // Statistiques des images
+    try {
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM images");
+        $stats['images'] = (int)$stmt->fetch()['count'];
+    } catch (Exception $e) {
+        $stats['images'] = 0;
+    }
     
 } catch(PDOException $e) {
     $error = "Erreur de base de données : " . $e->getMessage();
@@ -51,96 +115,181 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paramètres - Gestion des Composants</title>
     <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-muted: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent-indigo: #6366f1;
+            --accent-indigo-light: #e0e7ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
+            --accent-orange: #f97316;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
+            color: var(--text-primary);
+        }
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
             padding: 20px;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
+        .app-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
+            border-radius: var(--radius-xl);
+            padding: 28px 32px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.2);
             position: relative;
+            overflow: hidden;
         }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .user-info {
+        .app-header::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            right: 30px;
-            background: rgba(255,255,255,0.15);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            top: -80px;
+            right: -80px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+            border-radius: 50%;
         }
-
-        .nav-section {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .nav-buttons {
+        .header-top {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
+            font-size: 26px;
+            border: 1px solid rgba(255,255,255,0.25);
         }
-
-        .nav-buttons a {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+        .user-chip {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
         }
-
+        .logout-link {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .logout-link:hover { background: rgba(255,255,255,0.3); }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-buttons a {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
         .nav-buttons a:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255,255,255,0.28);
+            transform: translateY(-1px);
         }
-
-        .nav-buttons a.active {
-            background: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            white-space: nowrap;
         }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0); }
+        .btn-indigo  { background: var(--accent-indigo); color: white; }
+        .btn-purple  { background: var(--accent-purple); color: white; }
+        .btn-danger  { background: var(--accent-red); color: white; }
+        .btn-ghost   { background: var(--bg-muted); color: var(--text-secondary); }
+        .btn-ghost:hover { background: #e2e8f0; }
+        .btn-sm      { padding: 6px 11px; font-size: 12px; border-radius: 6px; gap: 4px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
         .content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
             padding: 30px;
         }
 
@@ -236,43 +385,24 @@ try {
             flex-wrap: wrap;
         }
 
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9em;
-        }
-
         .btn-primary {
-            background: #667eea;
+            background: var(--accent-indigo);
             color: white;
         }
 
         .btn-secondary {
-            background: #6c757d;
+            background: var(--text-secondary);
             color: white;
         }
 
         .btn-success {
-            background: #28a745;
+            background: var(--accent-green);
             color: white;
         }
 
         .btn-info {
-            background: #17a2b8;
+            background: var(--accent-teal);
             color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .alert {
@@ -328,23 +458,27 @@ try {
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="user-info">
-                👤 <?php echo htmlspecialchars($_SESSION['user_email']); ?>
-                <a href="logout.php" style="margin-left: 15px; color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">🚪 Déconnexion</a>
-            </div>
-            <h1>⚙️ Paramètres</h1>
-            
-            <div class="nav-section">
-                <div class="nav-buttons">
-                    <a href="components.php">📦 Composants</a>
-                    <a href="create_component.php">➕ Créer</a>
-                    <a href="projects.php">🚀 Projets</a>
-                    <a href="settings.php" class="active">⚙️ Paramètres</a>
+        <div class="app-header">
+            <div class="header-top">
+                <div class="header-title">
+                    <div class="header-icon">⚙️</div>
+                    <div>
+                        <h1>Paramètres de l'Application</h1>
+                        <p>Configurez l'application et vos préférences</p>
+                    </div>
+                </div>
+                <div class="user-chip">
+                    <span>👤 <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'Utilisateur'); ?></span>
+                    <a href="logout.php" class="logout-link">🚪 Déconnexion</a>
                 </div>
             </div>
+            <div class="nav-buttons">
+                <a href="components.php">📦 Composants</a>
+                <a href="create_component.php">➕ Créer</a>
+                <a href="projects.php">🚀 Projets</a>
+                <a href="settings.php">⚙️ Paramètres</a>
+            </div>
         </div>
-
         <div class="content">
             <?php if (isset($error)): ?>
                 <div class="alert alert-error">
@@ -472,11 +606,9 @@ try {
                     <div class="setting-title">Profile</div>
                     <div class="setting-description">
                         Gérez votre profil utilisateur : email, mot de passe.
-                        Configurez l'accès à la base de données.
                     </div>
                     <div class="setting-actions">
                         <a href="profile.php" class="btn btn-primary">⚙️ Gérer le profil</a>
-                        <a href="db_config.php" class="btn btn-info">🗄️ Config. BDD</a>
                     </div>
                 </div>
             </div>
@@ -503,10 +635,10 @@ try {
                 </div>
             </div>
         </div>
-    </div>
 
     <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
         Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
     </footer>
+    </div>
 </body>
 </html>

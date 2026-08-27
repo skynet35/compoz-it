@@ -1,14 +1,12 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php?error=not_logged_in');
     exit();
 }
 
-// Vérifier si l'ID du composant est fourni
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: components.php?error=invalid_id');
     exit();
@@ -19,7 +17,6 @@ $component_id = (int)$_GET['id'];
 try {
     $pdo = getConnection();
     
-    // Récupérer le composant (vérifier qu'il appartient à l'utilisateur)
     $stmt = $pdo->prepare("SELECT * FROM data WHERE id = ? AND owner = ?");
     $stmt->execute([$component_id, $_SESSION['user_id']]);
     $component = $stmt->fetch();
@@ -29,7 +26,6 @@ try {
         exit();
     }
     
-    // Traitement du formulaire de modification
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = trim($_POST['name'] ?? '');
         $manufacturer = trim($_POST['manufacturer'] ?? '');
@@ -40,7 +36,6 @@ try {
         $order_quantity = (int)($_POST['order_quantity'] ?? 0);
         $price = !empty($_POST['price']) ? (float)$_POST['price'] : null;
         $location_id = !empty($_POST['location_id']) ? (int)$_POST['location_id'] : null;
-        // $weight supprimé car la colonne n'existe plus dans la table
         $datasheet = trim($_POST['datasheet'] ?? '');
         $comment = trim($_POST['comment'] ?? '');
         $category = !empty($_POST['category']) ? (int)$_POST['category'] : null;
@@ -49,15 +44,12 @@ try {
         $supplier_id = !empty($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : null;
         $supplier_reference = trim($_POST['supplier_reference'] ?? '');
         
-        // Gestion de l'image
-        $image_path = $component['image_path']; // Garder l'image existante par défaut
+        $image_path = $component['image_path'];
         $image_type = $_POST['image_type'] ?? '';
         
         if ($image_type === 'existing' && !empty($_POST['existing_image'])) {
-            // Utiliser une image existante
             $image_path = trim($_POST['existing_image']);
         } elseif ($image_type === 'upload' && isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            // Upload d'une nouvelle image
             $upload_dir = 'img/';
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
@@ -71,7 +63,6 @@ try {
                 $upload_path = $upload_dir . $new_filename;
                 
                 if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)) {
-                    // Supprimer l'ancienne image si elle existe
                     if ($image_path && file_exists($image_path)) {
                         unlink($image_path);
                     }
@@ -79,24 +70,19 @@ try {
                 }
             }
         } elseif ($image_type === 'url' && !empty($_POST['image_url'])) {
-            // URL d'image
             $image_path = trim($_POST['image_url']);
         } elseif ($image_type === 'none') {
-            // Aucune image - supprimer l'image existante
             if ($image_path && file_exists($image_path) && strpos($image_path, 'uploads/') === 0) {
                 unlink($image_path);
             }
             $image_path = null;
         }
-        // Si $image_type est vide ou non défini, on garde l'image existante (pas de changement)
         
-        // Validation
         if (empty($name)) {
             $error = "Le nom du composant est obligatoire.";
         } elseif ($quantity < 0) {
             $error = "La quantité ne peut pas être négative.";
         } else {
-            // Mise à jour
             $sql = "UPDATE data SET 
                 name = ?, manufacturer = ?, package = ?, pins = ?, smd = ?, 
                 quantity = ?, order_quantity = ?, price = ?, location_id = ?, datasheet = ?, 
@@ -141,15 +127,12 @@ try {
         }
     }
     
-    // Récupérer les catégories principales
     $stmt = $pdo->query("SELECT * FROM category_head ORDER BY name");
     $categories = $stmt->fetchAll();
     
-    // Récupérer les sous-catégories pour le formulaire
     $stmt = $pdo->query("SELECT cs.*, ch.name as parent_name, cs.category_head_id as parent_id FROM category_sub cs LEFT JOIN category_head ch ON cs.category_head_id = ch.id ORDER BY cs.category_head_id, cs.name");
     $subcategories = $stmt->fetchAll();
     
-    // Déterminer la catégorie principale du composant actuel
     $component_category_head = null;
     if ($component['category']) {
         foreach ($subcategories as $subcat) {
@@ -160,7 +143,6 @@ try {
         }
     }
     
-    // Récupérer les emplacements de l'utilisateur avec le nombre de composants
 $stmt = $pdo->prepare("SELECT l.*, COUNT(d.id) as component_count 
                       FROM location l 
                       LEFT JOIN data d ON l.id = d.location_id AND d.owner = ?
@@ -172,10 +154,18 @@ $stmt = $pdo->prepare("SELECT l.*, COUNT(d.id) as component_count
 $stmt->execute([$_SESSION['user_id'], $_SESSION['user_id']]);
 $locations = $stmt->fetchAll();
     
-    // Récupérer les fournisseurs
     $stmt = $pdo->query("SELECT * FROM suppliers ORDER BY name");
     $suppliers = $stmt->fetchAll();
-    
+
+    // Récupérer les fabricants de l'utilisateur
+    $stmt = $pdo->prepare("SELECT name FROM manufacturers WHERE owner = ? ORDER BY name");
+    $stmt->execute([$_SESSION['user_id']]);
+    $manufacturers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    // Récupérer les packages existants
+    $stmt = $pdo->query("SELECT name FROM packages ORDER BY name");
+    $packages_list = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
 } catch(PDOException $e) {
     error_log("Erreur lors de la modification du composant : " . $e->getMessage());
     header('Location: components.php?error=database_error');
@@ -188,196 +178,351 @@ $locations = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier le Composant</title>
+    <title>Modifier un Composant</title>
     <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-muted: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent-indigo: #6366f1;
+            --accent-indigo-light: #e0e7ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
+            --accent-orange: #f97316;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
+            color: var(--text-primary);
+        }
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
             padding: 20px;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
+        .app-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
-            text-align: center;
+            border-radius: var(--radius-xl);
+            padding: 28px 32px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.2);
+            position: relative;
+            overflow: hidden;
         }
-
-        .content {
-            padding: 30px;
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+            border-radius: 50%;
         }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .logout-link {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .logout-link:hover { background: rgba(255,255,255,0.3); }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-buttons a {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-buttons a:hover {
+            background: rgba(255,255,255,0.28);
+            transform: translateY(-1px);
+        }
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0); }
+        .btn-indigo  { background: var(--accent-indigo); color: white; }
+        .btn-purple  { background: var(--accent-purple); color: white; }
+        .btn-danger  { background: var(--accent-red); color: white; }
+        .btn-ghost   { background: var(--bg-muted); color: var(--text-secondary); }
+        .btn-ghost:hover { background: #e2e8f0; }
+        .btn-sm      { padding: 6px 11px; font-size: 12px; border-radius: 6px; gap: 4px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-primary { background: var(--accent-green); color: white; }
+        .btn-secondary { background: var(--accent-blue); color: white; }
+        .btn-success { background: var(--accent-green); color: white; }
 
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+        }
+        .back-link {
+            margin-bottom: 20px;
+        }
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
-
         .form-group {
             display: flex;
             flex-direction: column;
         }
-
         .form-group label {
             margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
         }
-
         .form-group input,
         .form-group select,
         .form-group textarea {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+        .error {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            border: 1px solid #fecaca;
             font-size: 14px;
         }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: inline-block;
-            margin-right: 10px;
-        }
-
-        .btn-primary {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border: 1px solid #f5c6cb;
-        }
-
-        .back-link {
-            margin-bottom: 20px;
-        }
-        
-        /* Styles pour les emplacements */
         .location-available {
-            background-color: #d4edda !important;
-            color: #155724 !important;
+            background-color: #dcfce7 !important;
+            color: #166534 !important;
         }
-        
         .location-occupied {
-            background-color: #f8d7da !important;
-            color: #721c24 !important;
+            background-color: #fef2f2 !important;
+            color: #991b1b !important;
         }
-        
-        /* Styles pour l'autocomplétion */
+        .autocomplete-wrapper {
+            position: relative;
+        }
         .autocomplete-suggestions {
             position: absolute;
-            background: white;
-            border: 1px solid #ddd;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-top: none;
             max-height: 200px;
             overflow-y: auto;
             z-index: 1000;
             width: 100%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-md);
+            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
         }
-        
         .suggestion-item {
-            padding: 10px;
+            padding: 10px 12px;
             cursor: pointer;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 14px;
         }
-        
         .suggestion-item:hover {
-            background-color: #f5f5f5;
+            background-color: var(--bg-muted);
         }
-        
         .suggestion-item:last-child {
             border-bottom: none;
         }
-        
-        /* Styles pour les images existantes */
         .existing-images-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 10px;
             margin-top: 10px;
         }
-        
         .existing-image-item {
-            border: 2px solid #ddd;
-            border-radius: 5px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
             padding: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             text-align: center;
         }
-        
         .existing-image-item:hover {
-            border-color: #007bff;
+            border-color: var(--accent-indigo);
         }
-        
         .existing-image-item.selected {
-            border-color: #28a745;
-            background-color: #f8f9fa;
+            border-color: var(--accent-green);
+            background-color: var(--bg-muted);
         }
-        
         .existing-image-item img {
             width: 100%;
             height: 80px;
             object-fit: cover;
             border-radius: 3px;
         }
-        
         .existing-image-item .image-name {
             font-size: 12px;
             margin-top: 5px;
             word-break: break-word;
+            color: var(--text-secondary);
+        }
+        .form-actions {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        footer {
+            margin-top: 2rem;
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            border-radius: var(--radius-lg);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>✏️ Modifier le Composant</h1>
-            <p>Modification de: <?php echo htmlspecialchars($component['name']); ?></p>
-        </div>
+        <header class="app-header">
+            <div class="header-top">
+                <div class="header-title">
+                    <div class="header-icon">✏️</div>
+                    <div>
+                        <h1>Modifier un Composant</h1>
+                        <p>Mettez à jour les informations du composant</p>
+                    </div>
+                </div>
+                <div class="user-chip">
+                    <span>👤 <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'Utilisateur'); ?></span>
+                    <a href="logout.php" class="logout-link">🚪 Déconnexion</a>
+                </div>
+            </div>
+            <nav class="nav-buttons">
+                <a href="components.php">← Retour</a>
+                <a href="components.php">📦 Composants</a>
+                <a href="add_component.php">➕ Créer</a>
+                <a href="projects.php">🚀 Projets</a>
+                <a href="settings.php">⚙️ Paramètres</a>
+            </nav>
+        </header>
 
-        <div class="content">
+        <div class="content-card">
             <div class="back-link">
-                <a href="components.php" class="btn btn-secondary">← Retour à la liste</a>
+                <a href="components.php" class="btn btn-ghost">← Retour à la liste</a>
             </div>
 
             <?php if (isset($error)): ?>
@@ -390,11 +535,12 @@ $locations = $stmt->fetchAll();
                         <label for="name">Nom du composant *</label>
                         <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($component['name']); ?>" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrapper">
                         <label for="manufacturer">Fabricant</label>
-                        <input type="text" id="manufacturer" name="manufacturer" value="<?php echo htmlspecialchars($component['manufacturer'] ?? ''); ?>">
+                        <input type="text" id="manufacturer" name="manufacturer" value="<?php echo htmlspecialchars($component['manufacturer'] ?? ''); ?>" autocomplete="off">
+                        <div id="manufacturer-suggestions" class="autocomplete-suggestions"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrapper">
                         <label for="package">Package</label>
                         <input type="text" id="package" name="package" value="<?php echo htmlspecialchars($component['package'] ?? ''); ?>" autocomplete="off">
                         <div id="package-suggestions" class="autocomplete-suggestions"></div>
@@ -514,21 +660,26 @@ $locations = $stmt->fetchAll();
                     <label for="image_url">URL de l'image</label>
                     <input type="url" id="image_url" name="image_url" placeholder="https://exemple.com/image.jpg" onchange="updateImagePreview()">
                     <div id="image_preview" style="margin-top: 10px; display: none;">
-                        <img id="preview_img" src="" alt="Aperçu" style="max-width: 150px; max-height: 150px; border: 1px solid #ddd; border-radius: 5px;">
+                        <img id="preview_img" src="" alt="Aperçu" style="max-width: 150px; max-height: 150px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="comment">Commentaire</label>
                     <textarea id="comment" name="comment" rows="3"><?php echo htmlspecialchars($component['comment'] ?? ''); ?></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">💾 Sauvegarder les modifications</button>
-                <a href="components.php" class="btn btn-secondary">Annuler</a>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 Sauvegarder les modifications</button>
+                    <a href="components.php" class="btn btn-ghost">Annuler</a>
+                </div>
             </form>
         </div>
+
+        <footer>
+            Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
+        </footer>
     </div>
 
     <script>
-        // Stocker toutes les sous-catégories au chargement
         const allSubcategories = [];
         <?php foreach ($subcategories as $subcat): ?>
         allSubcategories.push({
@@ -545,11 +696,9 @@ $locations = $stmt->fetchAll();
             const selectedParentId = categoryHead.value;
             const currentSelection = category.value;
             
-            // Réinitialiser la sous-catégorie
             category.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
             
             if (selectedParentId) {
-                // Afficher seulement les sous-catégories de la catégorie sélectionnée
                 allSubcategories.forEach(subcat => {
                     if (subcat.parent_id === selectedParentId) {
                         const option = document.createElement('option');
@@ -566,9 +715,7 @@ $locations = $stmt->fetchAll();
             }
         }
         
-        // Initialiser les sous-catégories au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
-            // Sélectionner automatiquement la catégorie principale si une sous-catégorie est déjà sélectionnée
             <?php if ($component_category_head): ?>
             document.getElementById('category_head').value = '<?php echo $component_category_head; ?>';
             <?php endif; ?>
@@ -586,14 +733,13 @@ $locations = $stmt->fetchAll();
              urlGroup.style.display = 'none';
              existingGroup.style.display = 'none';
              
-             // Désactiver la validation pour le champ URL quand il n'est pas utilisé
              if (imageType === 'url') {
                  urlGroup.style.display = 'block';
                  imageUrlInput.removeAttribute('disabled');
                  imageUrlInput.type = 'url';
              } else {
                  imageUrlInput.setAttribute('disabled', 'disabled');
-                 imageUrlInput.type = 'text'; // Changer le type pour éviter la validation URL
+                 imageUrlInput.type = 'text';
                  if (imageType === 'upload') {
                      uploadGroup.style.display = 'block';
                  } else if (imageType === 'existing') {
@@ -603,14 +749,13 @@ $locations = $stmt->fetchAll();
              }
          }
          
-         // Fonction pour charger les images de la sous-catégorie
          function loadSubcategoryImages() {
              const categorySelect = document.getElementById('category');
              const subcategoryId = categorySelect.value;
              const container = document.getElementById('existing-images-container');
              
              if (!subcategoryId) {
-                 container.innerHTML = '<p>Veuillez d\'abord sélectionner une sous-catégorie.</p>';
+                 container.innerHTML = '<p style="color: var(--text-secondary); padding: 10px;">Veuillez d\'abord sélectionner une sous-catégorie.</p>';
                  return;
              }
              
@@ -621,16 +766,15 @@ $locations = $stmt->fetchAll();
                  })
                  .catch(error => {
                      console.error('Erreur:', error);
-                     container.innerHTML = '<p>Erreur lors du chargement des images.</p>';
+                     container.innerHTML = '<p style="color: var(--accent-red);">Erreur lors du chargement des images.</p>';
                  });
          }
          
-         // Fonction pour afficher les images existantes
          function displayExistingImages(images) {
              const container = document.getElementById('existing-images-container');
              
              if (images.length === 0) {
-                 container.innerHTML = '<p>Aucune image trouvée pour cette sous-catégorie.</p>';
+                 container.innerHTML = '<p style="color: var(--text-secondary); padding: 10px;">Aucune image trouvée pour cette sous-catégorie.</p>';
                  return;
              }
              
@@ -649,21 +793,15 @@ $locations = $stmt->fetchAll();
              container.innerHTML = html;
          }
          
-         // Fonction pour sélectionner une image existante
          function selectExistingImage(imagePath, element) {
-             // Retirer la sélection précédente
              document.querySelectorAll('.existing-image-item').forEach(item => {
                  item.classList.remove('selected');
              });
              
-             // Ajouter la sélection à l'élément cliqué
              element.classList.add('selected');
-             
-             // Mettre à jour le champ caché
              document.getElementById('selected_existing_image').value = imagePath;
          }
          
-         // Configuration de l'autocomplétion pour les packages
          function setupPackageAutocomplete() {
              const packageInput = document.getElementById('package');
              const suggestionsDiv = document.getElementById('package-suggestions');
@@ -680,10 +818,17 @@ $locations = $stmt->fetchAll();
                  fetch('get_packages.php?search=' + encodeURIComponent(query))
                      .then(response => response.json())
                      .then(data => {
-                         if (data.length > 0) {
+                         if (Array.isArray(data) && data.length > 0) {
                              let html = '';
-                             data.forEach(packageName => {
-                                 html += `<div class="suggestion-item" onclick="selectPackage('${packageName}')">${packageName}</div>`;
+                             data.forEach(pkg => {
+                                 const pkgName = (typeof pkg === 'string') ? pkg : (pkg.name || '');
+                                 if (!pkgName) return;
+                                 const extra = [];
+                                 if (typeof pkg === 'object' && pkg.package_type) extra.push(pkg.package_type);
+                                 if (typeof pkg === 'object' && pkg.pin_count) extra.push(`${pkg.pin_count} pins`);
+                                 if (typeof pkg === 'object' && pkg.mounting_type) extra.push(pkg.mounting_type);
+                                 const extraHtml = extra.length ? ` <small style="color:var(--text-muted); margin-left:8px;">${extra.join(' · ')}</small>` : '';
+                                 html += `<div class="suggestion-item" onclick="selectPackage('${pkgName.replace(/'/g, "\\'")}')">${pkgName}${extraHtml}</div>`;
                              });
                              suggestionsDiv.innerHTML = html;
                              suggestionsDiv.style.display = 'block';
@@ -699,7 +844,6 @@ $locations = $stmt->fetchAll();
                      });
              });
              
-             // Cacher les suggestions quand on clique ailleurs
              document.addEventListener('click', function(e) {
                  if (!packageInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
                      suggestionsDiv.style.display = 'none';
@@ -707,20 +851,57 @@ $locations = $stmt->fetchAll();
              });
          }
          
-         // Fonction pour sélectionner un package
+         function setupManufacturerAutocomplete() {
+             const manuInput = document.getElementById('manufacturer');
+             const suggestionsDiv = document.getElementById('manufacturer-suggestions');
+             if (!manuInput || !suggestionsDiv) return;
+             const manuList = Array.isArray(MANUFACTURERS_LIST) ? MANUFACTURERS_LIST : [];
+             
+             manuInput.addEventListener('input', function() {
+                 const query = this.value.trim().toLowerCase();
+                 if (query.length === 0) {
+                     suggestionsDiv.innerHTML = '';
+                     suggestionsDiv.style.display = 'none';
+                     return;
+                 }
+                 
+                 const matches = manuList.filter(m => m.toLowerCase().includes(query)).slice(0, 20);
+                 
+                 if (matches.length > 0) {
+                     suggestionsDiv.innerHTML = matches.map(m => 
+                         `<div class="suggestion-item" onclick="selectManufacturer('${m.replace(/'/g, "\\'")}')">${m}</div>`
+                     ).join('');
+                     suggestionsDiv.style.display = 'block';
+                 } else {
+                     suggestionsDiv.innerHTML = '';
+                     suggestionsDiv.style.display = 'none';
+                 }
+             });
+             
+             document.addEventListener('click', function(e) {
+                 if (!manuInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                     suggestionsDiv.style.display = 'none';
+                 }
+             });
+         }
+         
+         function selectManufacturer(manufacturerName) {
+             const el = document.getElementById('manufacturer');
+             if (el) el.value = manufacturerName;
+             const div = document.getElementById('manufacturer-suggestions');
+             if (div) div.style.display = 'none';
+         }
+         
          function selectPackage(packageName) {
              document.getElementById('package').value = packageName;
              document.getElementById('package-suggestions').style.display = 'none';
              checkAndSetPackageImage(packageName);
          }
          
-         // Fonction pour vérifier et définir automatiquement l'image du package
          function checkAndSetPackageImage(packageName) {
-             // Vérifier si une image existe pour ce package
              const imageExtensions = ['png', 'jpg', 'jpeg', 'svg'];
              let imageFound = false;
              
-             // Fonction pour tester chaque extension
              function testImageExtension(index) {
                  if (index >= imageExtensions.length || imageFound) {
                      return;
@@ -733,25 +914,21 @@ $locations = $stmt->fetchAll();
                  img.onload = function() {
                      if (!imageFound) {
                          imageFound = true;
-                         // Définir automatiquement l'image trouvée
                          document.getElementById('image_type').value = 'url';
                          toggleImageInput();
                          document.getElementById('image_url').value = imagePath;
                          
-                         // S'assurer que le champ URL est activé mais garder le type text pour éviter la validation
                          const imageUrlInput = document.getElementById('image_url');
                          imageUrlInput.removeAttribute('disabled');
-                         imageUrlInput.type = 'text'; // Utiliser 'text' car c'est un chemin relatif, pas une URL complète
+                         imageUrlInput.type = 'text';
                          
-                         // Afficher l'aperçu de l'image
                          updateImagePreview();
                          
-                         // Afficher un message informatif
                          const imageUrlGroup = document.getElementById('image_url_group');
                          if (!imageUrlGroup.querySelector('.auto-image-notice')) {
                              const notice = document.createElement('div');
                              notice.className = 'auto-image-notice';
-                             notice.style.cssText = 'color: #28a745; font-size: 12px; margin-top: 5px;';
+                             notice.style.cssText = 'color: var(--accent-green); font-size: 12px; margin-top: 5px;';
                              notice.textContent = '✓ Image du package détectée automatiquement';
                              imageUrlGroup.appendChild(notice);
                          }
@@ -765,13 +942,14 @@ $locations = $stmt->fetchAll();
                  img.src = imagePath;
              }
              
-             // Commencer le test avec la première extension
              testImageExtension(0);
          }
          
-         // Initialiser l'autocomplétion au chargement de la page
+         const MANUFACTURERS_LIST = <?php echo json_encode($manufacturers ?? [], JSON_UNESCAPED_UNICODE); ?>;
+         
          document.addEventListener('DOMContentLoaded', function() {
              setupPackageAutocomplete();
+             setupManufacturerAutocomplete();
          });
         
         function updateImagePreview() {
@@ -792,9 +970,5 @@ $locations = $stmt->fetchAll();
             }
         }
     </script>
-
-    <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
-        Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
-    </footer>
 </body>
 </html>

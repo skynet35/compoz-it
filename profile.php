@@ -1,8 +1,7 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php?error=not_logged_in');
     exit();
@@ -11,7 +10,6 @@ if (!isset($_SESSION['user_id'])) {
 $message = '';
 $error = '';
 
-// Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
@@ -26,14 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif (!filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Email invalide';
             } else {
-                // Vérifier si l'email n'est pas déjà utilisé
                 $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
                 $stmt->execute([$new_email, $_SESSION['user_id']]);
                 
                 if ($stmt->fetch()) {
                     $error = 'Cet email est déjà utilisé par un autre compte';
                 } else {
-                    // Mettre à jour l'email
                     $stmt = $pdo->prepare("UPDATE users SET email = ? WHERE id = ?");
                     if ($stmt->execute([$new_email, $_SESSION['user_id']])) {
                         $_SESSION['user_email'] = $new_email;
@@ -55,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($new_password !== $confirm_password) {
                 $error = 'Les nouveaux mots de passe ne correspondent pas';
             } else {
-                // Vérifier le mot de passe actuel
                 $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
                 $stmt->execute([$_SESSION['user_id']]);
                 $user = $stmt->fetch();
@@ -63,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!$user || !password_verify($current_password, $user['password'])) {
                     $error = 'Mot de passe actuel incorrect';
                 } else {
-                    // Mettre à jour le mot de passe
                     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                     $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
                     if ($stmt->execute([$hashed_password, $_SESSION['user_id']])) {
@@ -79,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Récupérer les informations de l'utilisateur
 try {
     $pdo = getConnection();
     $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
@@ -97,89 +90,207 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil - Gestion des Composants</title>
     <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-muted: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent-indigo: #6366f1;
+            --accent-indigo-light: #e0e7ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
+            --accent-orange: #f97316;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
+            color: var(--text-primary);
+        }
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
             padding: 20px;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
+        .app-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
+            border-radius: var(--radius-xl);
+            padding: 28px 32px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.2);
             position: relative;
+            overflow: hidden;
         }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .user-info {
+        .app-header::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            right: 30px;
-            background: rgba(255,255,255,0.15);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            top: -80px;
+            right: -80px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+            border-radius: 50%;
         }
-
-        .nav-section {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .nav-buttons {
+        .header-top {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
+            font-size: 26px;
+            border: 1px solid rgba(255,255,255,0.25);
         }
-
-        .nav-buttons a {
-            background: rgba(255, 255, 255, 0.2);
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .logout-link {
             color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .logout-link:hover { background: rgba(255,255,255,0.3); }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-buttons a {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-buttons a:hover {
+            background: rgba(255,255,255,0.28);
+            transform: translateY(-1px);
+        }
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0); }
+        .btn-indigo  { background: var(--accent-indigo); color: white; }
+        .btn-purple  { background: var(--accent-purple); color: white; }
+        .btn-danger  { background: var(--accent-red); color: white; }
+        .btn-ghost   { background: var(--bg-muted); color: var(--text-secondary); }
+        .btn-ghost:hover { background: #e2e8f0; }
+        .btn-sm      { padding: 6px 11px; font-size: 12px; border-radius: 6px; gap: 4px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .btn-primary {
+            background: var(--accent-indigo);
+            color: white;
         }
 
-        .nav-buttons a:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        .btn-secondary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--accent-teal);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--accent-amber);
+            color: #212529;
         }
 
         .content {
             padding: 30px;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
         }
 
         .profile-section {
@@ -214,35 +325,6 @@ try {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1em;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .alert {
@@ -290,22 +372,27 @@ try {
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="user-info">
-                👤 <?php echo htmlspecialchars($_SESSION['user_email']); ?>
-                <a href="logout.php" style="margin-left: 15px; color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">🚪 Déconnexion</a>
-            </div>
-            <h1>👤 Profil Utilisateur</h1>
-            
-            <div class="nav-section">
-                <div class="nav-buttons">
-                    <a href="components.php">📦 Composants</a>
-                    <a href="settings.php">⚙️ Paramètres</a>
-                    <a href="db_config.php">🗄️ Config. BDD</a>
+        <div class="app-header">
+        <div class="header-top">
+            <div class="header-title">
+                <div class="header-icon">👤</div>
+                <div>
+                    <h1>Profil Utilisateur</h1>
+                    <p>Gérez vos informations de compte et préférences</p>
                 </div>
             </div>
+            <div class="user-chip">
+                <span>👤 <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'Utilisateur'); ?></span>
+                <a href="logout.php" class="logout-link">🚪 Déconnexion</a>
+            </div>
         </div>
-
+        <div class="nav-buttons">
+            <a href="components.php">📦 Composants</a>
+            <a href="create_component.php">➕ Créer</a>
+            <a href="projects.php">🚀 Projets</a>
+            <a href="settings.php">⚙️ Paramètres</a>
+        </div>
+        </div>
         <div class="content">
             <?php if ($message): ?>
                 <div class="alert alert-success">
@@ -319,7 +406,6 @@ try {
                 </div>
             <?php endif; ?>
 
-            <!-- Modification de l'email -->
             <div class="profile-section">
                 <h2 class="section-title">📧 Modifier l'email</h2>
                 
@@ -341,7 +427,6 @@ try {
                 </form>
             </div>
 
-            <!-- Modification du mot de passe -->
             <div class="profile-section">
                 <h2 class="section-title">🔒 Modifier le mot de passe</h2>
 
@@ -369,7 +454,6 @@ try {
                 </form>
             </div>
 
-            <!-- Accès rapide à la configuration BDD -->
             <div class="profile-section">
                 <h2 class="section-title">🗄️ Configuration Base de Données</h2>
                 
@@ -377,17 +461,15 @@ try {
                     <strong>Base de données actuelle :</strong> <?php echo htmlspecialchars(DB_NAME); ?>
                 </div>
                 
-                <p>Configurez les paramètres de connexion à votre base de données MySQL.</p>
-                
-                <div class="form-actions">
-                    <a href="db_config.php" class="btn btn-secondary">⚙️ Configurer la base de données</a>
-                </div>
+                <p style="margin-top:10px;color:#475569;font-size:14px">
+                    Les identifiants MySQL sont stockés dans le fichier <code style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:2px 6px;font-family:ui-monospace,Consolas,monospace">config.local.php</code> à la racine du projet.
+                    Modifiez directement ce fichier avec vos nouveaux identifiants (copiez le modèle <code style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:2px 6px;font-family:ui-monospace,Consolas,monospace">config.local.template.php</code> si besoin).
+                </p>
             </div>
         </div>
+        <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
+            Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
+        </footer>
     </div>
-
-    <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
-        Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
-    </footer>
 </body>
 </html>

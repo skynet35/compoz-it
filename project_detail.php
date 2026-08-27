@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
 // Vérifier si l'utilisateur est connecté
@@ -452,6 +452,31 @@ try {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-muted: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent-indigo: #6366f1;
+            --accent-indigo-light: #e0e7ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
+            --accent-orange: #f97316;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
             --primary-color: #667eea;
             --secondary-color: #764ba2;
             --accent-color: #f093fb;
@@ -460,23 +485,151 @@ try {
             --danger-color: #ef4444;
             --dark-color: #1f2937;
             --light-color: #f8fafc;
-            --border-color: #e2e8f0;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
-            color: var(--dark-color);
+            color: var(--text-primary);
         }
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .app-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: 28px 32px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+            border-radius: 50%;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .logout-link {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .logout-link:hover { background: rgba(255,255,255,0.3); }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-buttons a {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-buttons a:hover {
+            background: rgba(255,255,255,0.28);
+            transform: translateY(-1px);
+        }
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0); }
+        .btn-indigo  { background: var(--accent-indigo); color: white; }
+        .btn-purple  { background: var(--accent-purple); color: white; }
+        .btn-danger  { background: var(--accent-red); color: white; }
+        .btn-ghost   { background: var(--bg-muted); color: var(--text-secondary); }
+        .btn-ghost:hover { background: #e2e8f0; }
+        .btn-sm      { padding: 6px 11px; font-size: 12px; border-radius: 6px; gap: 4px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
         .main-container {
             min-height: 100vh;
@@ -484,38 +637,18 @@ try {
             flex-direction: column;
         }
 
-        /* Header moderne */
-        .modern-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .modern-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
-            pointer-events: none;
-        }
-
         .header-content {
             position: relative;
-            z-index: 1;
-            max-width: 1200px;
-            margin: 0 auto;
+            z-index: 2;
+            max-width: 1420px;
+            margin: 24px auto 0;
         }
 
         .project-header {
             display: flex;
             align-items: center;
             gap: 2rem;
-            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
         .project-avatar {
@@ -530,20 +663,188 @@ try {
             justify-content: center;
             font-size: 2.5rem;
             color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.45);
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 13px;
+            color: white;
+            border-radius: 18px;
+        }
+
+        .project-avatar:hover .image-overlay { opacity: 1; }
+
+        .project-image-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .btn-sm-outline {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-sm-outline:hover { background: rgba(255,255,255,0.25); }
+
+        .btn-sm-danger {
+            background: rgba(239, 68, 68, 0.85);
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.9);
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-sm-danger:hover { filter: brightness(1.05); }
+
         .project-info h1 {
-            font-size: 2.5rem;
+            font-size: 30px;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
+
+        .project-edit-inline-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: rgba(255,255,255,0.55);
+            border: 1px solid transparent;
+            padding: 4px 7px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.6em;
+            line-height: 1;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        .project-info:hover .project-edit-inline-btn,
+        .project-edit-inline-btn:focus-visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .project-edit-inline-btn:hover {
+            background: rgba(255,255,255,0.18);
+            color: white;
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        .project-edit-inline-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ---- Modale Rename Projet (detail) ---- */
+        .rename-project-modal-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(6px);
+            display: none; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .rename-project-modal-overlay.open { display: flex; }
+        .rename-project-modal-box {
+            background: white;
+            border-radius: 18px;
+            width: 100%; max-width: 560px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+            overflow: hidden;
+            animation: renameModalPop .22s ease both;
+        }
+        @keyframes renameModalPop { from { transform: translateY(12px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
+        .rename-project-modal-head {
+            padding: 22px 26px 16px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+        .rename-project-modal-head h3 { margin: 0 0 4px; font-size: 1.2rem; font-weight: 700; }
+        .rename-project-modal-head p  { margin: 0; opacity: .9; font-size: .88rem; }
+        .rename-project-modal-body { padding: 24px 26px 10px; }
+        .rename-project-modal-foot { padding: 10px 26px 22px; display:flex; justify-content:flex-end; gap:10px; }
+        .rename-form-oldname {
+            padding: 10px 14px;
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px dashed rgba(99, 102, 241, 0.35);
+            color: #3730a3;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+        .rename-form-group { margin-bottom: 16px; }
+        .rename-form-group label { display:block; margin-bottom:6px; font-weight:600; color:#334155; font-size: 14px; }
+        .rename-form-group input,
+        .rename-form-group select,
+        .rename-form-group textarea {
+            width: 100%; padding: 10px 12px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px; font-size: 14px;
+            background: #f8fafc; transition: all .18s;
+            font-family: inherit;
+        }
+        .rename-form-group textarea { resize: vertical; min-height: 72px; }
+        .rename-form-group input:focus,
+        .rename-form-group select:focus,
+        .rename-form-group textarea:focus {
+            outline: none; border-color: #6366f1;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+        }
+        .rename-hint { font-size: 12.5px; color: #64748b; margin-top: 6px; }
+        .rename-btn-cancel {
+            background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;
+            padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px;
+            transition: all .18s;
+        }
+        .rename-btn-cancel:hover { background: #e2e8f0; }
+        .rename-btn-submit {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white; border: none;
+            padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px;
+            transition: all .18s;
+            box-shadow: 0 6px 16px rgba(99,102,241,.3);
+        }
+        .rename-btn-submit:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(99,102,241,.32); }
+        .rename-btn-submit:active { transform: translateY(0); }
 
         .project-meta {
             display: flex;
-            gap: 2rem;
+            gap: 1.5rem;
             font-size: 0.9rem;
-            opacity: 0.9;
+            opacity: 0.92;
+            flex-wrap: wrap;
         }
 
         .meta-item {
@@ -552,65 +853,12 @@ try {
             gap: 0.5rem;
         }
 
-        .user-info {
-            position: absolute;
-            top: 1rem;
-            right: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 0.9rem;
-        }
-
-        .nav-section {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-buttons a {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-buttons a:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-buttons a.active {
-            background: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
         /* Container principal */
         .content-container {
             flex: 1;
             background: white;
-            margin: -2rem 2rem 2rem;
-            border-radius: 20px 20px 0 0;
+            margin: 0;
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
             overflow: hidden;
         }
@@ -951,37 +1199,385 @@ try {
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Project Image Upload Overlay */
+        .project-avatar {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .project-avatar .image-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            gap: 4px;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .project-avatar:hover .image-overlay {
+            opacity: 1;
+        }
+        
+        .image-overlay i {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+        
+        .project-image-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-sm:hover { transform: translateY(-1px); }
+        .btn-sm-outline {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        .btn-sm-outline:hover { background: rgba(255,255,255,0.25); }
+        
+        .btn-sm-danger {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-sm-danger:hover { background: #c82333; }
+        
+        /* Modal for image upload */
+        .image-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .image-modal-backdrop.active { display: flex; }
+        
+        .image-modal {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.25s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .image-modal h3 {
+            margin: 0 0 20px 0;
+            color: #1a1a2e;
+            font-size: 1.3rem;
+        }
+        
+        .drop-zone {
+            border: 2.5px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--primary-color, #667eea);
+            background: #eef2ff;
+        }
+        
+        .drop-zone i {
+            font-size: 2.8rem;
+            color: var(--primary-color, #667eea);
+            margin-bottom: 10px;
+        }
+        
+        .drop-zone p {
+            margin: 5px 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .drop-zone p b { color: var(--primary-color, #667eea); }
+        .drop-zone p.small { font-size: 0.75rem; color: #94a3b8; }
+        
+        .image-modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            justify-content: flex-end;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-btn.cancel { background: #f1f5f9; color: #475569; }
+        .modal-btn.cancel:hover { background: #e2e8f0; }
+        .modal-btn.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .modal-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3); }
+        .modal-btn.primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        /* ===== MODALE SUPPRESSION FICHIER ===== */
+
+        .del-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: 9998;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            animation: modalFadeIn 0.2s ease;
+        }
+        .del-modal-backdrop.active { display: flex; }
+
+        .del-modal {
+            background: white;
+            border-radius: 1.25rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.3);
+            overflow: hidden;
+            animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .del-modal-header {
+            padding: 1.75rem 1.75rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .del-modal-icon {
+            width: 64px; height: 64px;
+            border-radius: 1.25rem;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            color: white;
+            display: grid; place-items: center;
+            font-size: 28px; font-weight: 900;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+        }
+        .del-modal h3 {
+            margin: 0 0 0.35rem;
+            font-size: 1.35rem;
+            color: #0f172a;
+            font-weight: 900;
+        }
+        .del-modal-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        .del-modal-body { padding: 1.25rem 1.75rem; }
+
+        .del-modal-filename {
+            background: #fef2f2;
+            border: 1.5px solid #fecaca;
+            color: #b91c1c;
+            font-weight: 800;
+            border-radius: 0.85rem;
+            padding: 0.9rem 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            word-break: break-word;
+            font-size: 1rem;
+        }
+
+        .del-modal-warnings {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 0.85rem;
+            padding: 0.9rem 1rem;
+        }
+        .del-modal-warnings h4 {
+            color: #b45309;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.78rem;
+            font-weight: 900;
+            margin: 0 0 0.4rem;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .del-modal-warnings p {
+            margin: 0;
+            color: #78350f;
+            font-size: 0.88rem;
+            line-height: 1.55;
+        }
+
+        .del-modal-actions {
+            padding: 1rem 1.75rem 1.75rem;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            gap: 0.85rem;
+        }
+
+        .del-btn {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .del-btn.cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        .del-btn.cancel:hover { background: #e2e8f0; color: #1e293b; }
+        .del-btn.confirm {
+            flex: 1.25;
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            color: white;
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+        }
+        .del-btn.confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(239, 68, 68, 0.45);
+        }
+
+        .upload-progress {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .upload-progress.active { display: block; }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 999px;
+        }
+        
+        .file-name {
+            font-size: 0.85rem;
+            color: #475569;
+            margin-top: 6px;
+        }
+        
+        .upload-success-msg, .upload-error-msg {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            display: none;
+        }
+        .upload-success-msg { background: #dcfce7; color: #166534; display: none; }
+        .upload-error-msg { background: #fee2e2; color: #991b1b; display: none; }
+        .upload-success-msg.show, .upload-error-msg.show { display: block; }
     </style>
 </head>
-<body>
-    <div class="main-container">
-        <!-- Header moderne -->
-        <header class="modern-header">
-            <div class="user-info">
-                <i class="fas fa-user"></i>
-                Connecté en tant que: <strong><?php echo htmlspecialchars($_SESSION['user_email']); ?></strong>
-            </div>
-            
-            <div class="nav-section">
-                <div class="nav-buttons">
-                    <a href="components.php">📦 Composants</a>
-                    <a href="projects.php">🚀 Projets</a>
-                    <a href="settings.php">⚙️ Paramètres</a>
+<body data-project-id="<?php echo $project_id; ?>">
+    <div class="container">
+        <div class="app-header">
+            <div class="header-top">
+                <div class="header-title">
+                    <div class="header-icon">🛠️</div>
+                    <div>
+                        <h1>Détails du Projet</h1>
+                        <p>Suivez l'avancement et la composition de votre projet</p>
+                    </div>
+                </div>
+                <div class="user-chip">
+                    <span>👤 <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'Utilisateur'); ?></span>
+                    <a href="logout.php" class="logout-link">🚪 Déconnexion</a>
                 </div>
             </div>
-            
+            <div class="nav-buttons">
+                <a href="components.php">📦 Composants</a>
+                <a href="create_component.php">➕ Créer</a>
+                <a href="projects.php">📋 Liste Projets</a>
+                <a href="settings.php">⚙️ Paramètres</a>
+            </div>
             <div class="header-content">
                 <div class="project-header">
-                    <div class="project-avatar">
-                        <?php if (!empty($project['image_path']) && file_exists($project['image_path'])): ?>
-                            <img src="<?php echo htmlspecialchars($project['image_path']); ?>" alt="Image du projet" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">
-                        <?php else: ?>
-                            <i class="fas fa-microchip"></i>
-                        <?php endif; ?>
+                    <div>
+                        <div class="project-avatar" id="projectAvatar" onclick="openImageModal()">
+                            <?php if (!empty($project['image_path']) && file_exists($project['image_path'])): ?>
+                                <img id="projectAvatarImg" src="<?php echo htmlspecialchars($project['image_path']) . '?t=' . filemtime($project['image_path']); ?>" alt="Image du projet" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">
+                            <?php else: ?>
+                                <i class="fas fa-microchip"></i>
+                            <?php endif; ?>
+                            <div class="image-overlay">
+                                <i class="fas fa-camera"></i>
+                                <span>Cliquer pour <b>changer</b> l'image</span>
+                            </div>
+                        </div>
+                        <div class="project-image-actions">
+                            <button type="button" class="btn-sm-outline" onclick="openImageModal()">
+                                <i class="fas fa-image"></i> Changer l'image
+                            </button>
+                            <?php if (!empty($project['image_path']) && file_exists($project['image_path'])): ?>
+                                <button type="button" class="btn-sm-danger" onclick="deleteProjectImage()">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    
                     <div class="project-info">
-                        <h1><?php echo htmlspecialchars($project['name']); ?></h1>
+                        <h1>
+                            <?php echo htmlspecialchars($project['name']); ?>
+                            <button type="button"
+                                    class="project-edit-inline-btn"
+                                    title="Renommer / modifier le projet"
+                                    onclick="openRenameProjectModal(<?php echo (int)$project['id']; ?>, '<?php echo htmlspecialchars(addslashes($project['name'])); ?>', '<?php echo htmlspecialchars(addslashes($project['description'] ?? '')); ?>', '<?php echo htmlspecialchars(addslashes($project['status'])); ?>')">
+                                ✏️
+                            </button>
+                        </h1>
                         <div class="project-meta">
                             <div class="meta-item">
                                 <i class="fas fa-calendar"></i>
@@ -1001,10 +1597,10 @@ try {
                     </div>
                 </div>
             </div>
-        </header>
-
-        <!-- Container principal -->
-        <div class="content-container">
+        </div>
+        <div class="main-container">
+            <!-- Container principal -->
+            <div class="content-container">
             <!-- Navigation par onglets -->
             <div class="tabs-header">
                 <nav class="tabs-nav">
@@ -1039,6 +1635,8 @@ try {
                         case 'item_added': echo 'Élément ajouté avec succès !'; break;
                         case 'item_removed': echo 'Élément supprimé avec succès !'; break;
                         case 'status_updated': echo 'Statut mis à jour avec succès !'; break;
+                        case 'project_renamed': echo '✅ Projet renommé / modifié avec succès !'; break;
+                        case 'files_uploaded': echo '✅ Fichier(s) uploadé(s) avec succès !'; break;
                         default: echo 'Opération réussie !';
                     }
                     ?>
@@ -1183,7 +1781,7 @@ try {
                                     $component_price = $pc['price'] ?? 0;
                                     $total_component_cost = $component_price * $pc['quantity_needed'];
                                     ?>
-                                    <tr>
+                                    <tr data-component-row="<?php echo $pc['id']; ?>">
                                         <td>
                                             <strong><?php echo htmlspecialchars($pc['component_name']); ?></strong>
                                             <?php if (isset($pc['manufacturer']) && $pc['manufacturer']): ?>
@@ -1192,22 +1790,22 @@ try {
                                         </td>
                                         <td>
                                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                                <form method="POST" style="display: inline;">
+                                                <form method="POST" style="display: inline;" data-quantity-form data-pc-id="<?php echo $pc['id']; ?>" data-action-type="minus">
                                                     <input type="hidden" name="action" value="update_quantity_used">
                                                     <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
                                                     <input type="hidden" name="quantity_used" value="<?php echo max(0, $pc['quantity_used'] - 1); ?>">
                                                     <input type="hidden" name="source_tab" value="overview">
-                                                    <button type="submit" class="btn btn-sm" style="background: #ef4444; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem;" <?php echo $pc['quantity_used'] <= 0 ? 'disabled' : ''; ?>>
+                                                    <button type="submit" class="btn btn-sm" data-qty-btn="minus" style="background: #ef4444; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem;" <?php echo $pc['quantity_used'] <= 0 ? 'disabled' : ''; ?>>
                                                         <i class="fas fa-minus"></i>
                                                     </button>
                                                 </form>
-                                                <span style="font-weight: 600; min-width: 60px; text-align: center;"><?php echo $pc['quantity_used']; ?> / <?php echo $pc['quantity_needed']; ?></span>
-                                                <form method="POST" style="display: inline;">
+                                                <span data-qty-display style="font-weight: 600; min-width: 60px; text-align: center;"><?php echo $pc['quantity_used']; ?> / <?php echo $pc['quantity_needed']; ?></span>
+                                                <form method="POST" style="display: inline;" data-quantity-form data-pc-id="<?php echo $pc['id']; ?>" data-action-type="plus">
                                                     <input type="hidden" name="action" value="update_quantity_used">
                                                     <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
                                                     <input type="hidden" name="quantity_used" value="<?php echo min($pc['quantity_needed'], $pc['quantity_used'] + 1); ?>">
                                                     <input type="hidden" name="source_tab" value="overview">
-                                                    <button type="submit" class="btn btn-sm" style="background: #10b981; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem;" <?php echo $pc['quantity_used'] >= $pc['quantity_needed'] ? 'disabled' : ''; ?>>
+                                                    <button type="submit" class="btn btn-sm" data-qty-btn="plus" style="background: #10b981; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem;" <?php echo $pc['quantity_used'] >= $pc['quantity_needed'] ? 'disabled' : ''; ?>>
                                                         <i class="fas fa-plus"></i>
                                                     </button>
                                                 </form>
@@ -1215,11 +1813,11 @@ try {
                                         </td>
                                         <td>
                                             <div class="progress-bar" style="width: 80px;">
-                                                <div class="progress-fill" style="width: <?php echo $progress; ?>%"></div>
+                                                <div class="progress-fill" data-progress-fill style="width: <?php echo $progress; ?>%"></div>
                                             </div>
-                                            <small style="color: #64748b;"><?php echo number_format($progress, 0); ?>%</small>
+                                            <small style="color: #64748b;" data-progress-text><?php echo number_format($progress, 0); ?>%</small>
                                         </td>
-                                        <td><?php echo number_format($total_component_cost, 2); ?>€</td>
+                                        <td data-total-cost><?php echo number_format($total_component_cost, 2); ?>€</td>
                                     </tr>
                                 <?php endforeach; ?>
                                 <?php if (count($project_components) > 10): ?>
@@ -1266,7 +1864,7 @@ try {
                                     $progress = min(100, max(0, $progress));
                                     $item_total_cost = $item['quantity'] * $item['unit_price'];
                                     ?>
-                                    <tr>
+                                    <tr data-item-row="<?php echo $item['id']; ?>">
                                         <td>
                                             <strong><?php echo htmlspecialchars($item['name'] ?? $item['description']); ?></strong>
                                             <?php if (isset($item['description']) && $item['description'] && $item['description'] !== ($item['name'] ?? '')): ?>
@@ -1291,20 +1889,26 @@ try {
                                         <td><?php echo $item['quantity']; ?> <?php echo htmlspecialchars($item['unit'] ?? ''); ?></td>
                                         <td>
                                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                                <button onclick="updateProgress(<?php echo $item['id']; ?>, -25)" 
+                                                <button onclick="updateProgress(<?php echo $item['id']; ?>, -25)" data-item-btn-minus
                                                         style="background: #ef4444; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem;"
-                                                        title="Diminuer la progression">
+                                                        title="Diminuer la progression"
+                                                        <?php echo $completed_quantity <= 0 ? 'disabled' : ''; ?>>
                                                     <i class="fas fa-minus"></i>
                                                 </button>
                                                 <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
                                                     <div class="progress-bar" style="width: 80px;">
-                                                        <div class="progress-fill" style="width: <?php echo $progress; ?>%"></div>
+                                                        <div class="progress-fill" data-progress-fill style="width: <?php echo $progress; ?>%"></div>
                                                     </div>
-                                                    <small style="color: #64748b; font-size: 0.75rem;"><?php echo number_format($completed_quantity, 1); ?> / <?php echo number_format($total_quantity, 1); ?> <?php echo htmlspecialchars($item['unit']); ?></small>
+                                                    <small style="color: #64748b; font-size: 0.75rem;" data-progress-text>
+                                                        <span data-qty-completed><?php echo number_format($completed_quantity, 1); ?></span>
+                                                        / <span data-qty-total><?php echo number_format($total_quantity, 1); ?></span>
+                                                        <span data-qty-unit><?php echo htmlspecialchars($item['unit']); ?></span>
+                                                    </small>
                                                 </div>
-                                                <button onclick="updateProgress(<?php echo $item['id']; ?>, 25)" 
+                                                <button onclick="updateProgress(<?php echo $item['id']; ?>, 25)" data-item-btn-plus
                                                         style="background: #10b981; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem;"
-                                                        title="Augmenter la progression">
+                                                        title="Augmenter la progression"
+                                                        <?php echo $completed_quantity >= $total_quantity ? 'disabled' : ''; ?>>
                                                     <i class="fas fa-plus"></i>
                                                 </button>
                                             </div>
@@ -1462,14 +2066,14 @@ try {
                                                     onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
                                                 <i class="fas fa-edit" style="font-size: 0.875rem;"></i>
                                             </button>
-                                            <form method="POST" action="delete_project_file.php" style="display: inline;">
+                                            <form method="POST" action="delete_project_file.php" style="display: inline;" data-delete-file-form>
                                                 <input type="hidden" name="file_id" value="<?php echo $file['id']; ?>">
                                                 <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
-                                                <button type="submit" 
+                                                <button type="button" 
                                                         style="background: #ef4444; color: white; border: none; padding: 0.5rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; transition: all 0.2s;"
                                                         title="Supprimer"
                                                         onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'"
-                                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?')">
+                                                        onclick="openDeleteFileModal(<?php echo (int)$file['id']; ?>, '<?php echo htmlspecialchars(addslashes($file['display_name'] ?? $file['original_name'] ?? 'Fichier'), ENT_QUOTES); ?>')">
                                                     <i class="fas fa-trash" style="font-size: 0.875rem;"></i>
                                                 </button>
                                             </form>
@@ -1546,7 +2150,8 @@ try {
                                     <th>Composant</th>
                                     <th>Fabricant</th>
                                     <th>Package</th>
-                                    <th>Quantité</th>
+                                    <th>Utilisée</th>
+                                    <th>Besoin</th>
                                     <th>Progression</th>
                                     <th>Prix unitaire</th>
                                     <th>Coût total</th>
@@ -1562,7 +2167,7 @@ try {
                                     $component_price = $pc['price'] ?? 0;
                                     $total_component_cost = $component_price * $pc['quantity_needed'];
                                     ?>
-                                    <tr>
+                                    <tr data-component-row="<?php echo $pc['id']; ?>">
                                         <td>
                                             <strong><?php echo htmlspecialchars($pc['component_name']); ?></strong>
                                             <?php if ($pc['notes']): ?>
@@ -1572,27 +2177,79 @@ try {
                                         <td><?php echo htmlspecialchars($pc['manufacturer'] ?? 'N/A'); ?></td>
                                         <td><?php echo htmlspecialchars($pc['package'] ?? 'N/A'); ?></td>
                                         <td>
-                                            <form method="POST" style="display: inline-flex; align-items: center; gap: 0.5rem;">
-                                                <input type="hidden" name="action" value="update_quantity_used">
-                                                <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
-                                                <input type="hidden" name="source_tab" value="components">
-                                                <input type="number" name="quantity_used" value="<?php echo $pc['quantity_used']; ?>" 
-                                                       min="0" max="<?php echo $pc['quantity_needed']; ?>" 
-                                                       style="width: 60px; padding: 0.25rem; border: 1px solid var(--border-color); border-radius: 4px;">
-                                                <span style="color: #64748b;">/ <?php echo $pc['quantity_needed']; ?></span>
-                                                <button type="submit" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
+                                            <div style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                                <form method="POST" style="display: inline;" data-quantity-form data-pc-id="<?php echo $pc['id']; ?>" data-action-type="minus">
+                                                    <input type="hidden" name="action" value="update_quantity_used">
+                                                    <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
+                                                    <input type="hidden" name="source_tab" value="components">
+                                                    <input type="hidden" name="quantity_used" value="<?php echo max(0, $pc['quantity_used'] - 1); ?>">
+                                                    <button type="submit" class="btn btn-sm" data-qty-btn="minus" style="background: #ef4444; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem;" <?php echo $pc['quantity_used'] <= 0 ? 'disabled' : ''; ?>>
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" style="display: inline-flex; align-items: center; gap: 0.35rem;" data-quantity-form data-pc-id="<?php echo $pc['id']; ?>" data-action-type="manual">
+                                                    <input type="hidden" name="action" value="update_quantity_used">
+                                                    <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
+                                                    <input type="hidden" name="source_tab" value="components">
+                                                    <input type="number" name="quantity_used" data-qty-input value="<?php echo $pc['quantity_used']; ?>" 
+                                                           min="0" max="<?php echo $pc['quantity_needed']; ?>" 
+                                                           style="width: 56px; padding: 0.25rem; border: 1px solid var(--border-color); border-radius: 4px; text-align: center;">
+                                                    <button type="submit" class="btn btn-sm btn-primary" data-qty-btn="check" style="padding: 0.25rem 0.4rem; font-size: 0.75rem;">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" style="display: inline;" data-quantity-form data-pc-id="<?php echo $pc['id']; ?>" data-action-type="plus">
+                                                    <input type="hidden" name="action" value="update_quantity_used">
+                                                    <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
+                                                    <input type="hidden" name="source_tab" value="components">
+                                                    <input type="hidden" name="quantity_used" value="<?php echo min($pc['quantity_needed'], $pc['quantity_used'] + 1); ?>">
+                                                    <button type="submit" class="btn btn-sm" data-qty-btn="plus" style="background: #10b981; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem;" <?php echo $pc['quantity_used'] >= $pc['quantity_needed'] ? 'disabled' : ''; ?>>
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                                <form method="POST" style="display: inline;" data-needed-form data-pc-id="<?php echo $pc['id']; ?>" data-needed-action="minus">
+                                                    <input type="hidden" name="action" value="update_quantity_needed">
+                                                    <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
+                                                    <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                                                    <input type="hidden" name="change" value="-1">
+                                                    <button type="submit" class="btn btn-sm" style="background: #6366f1; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem;" <?php echo $pc['quantity_needed'] <= 1 ? 'disabled' : ''; ?> data-needed-btn="minus">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" style="display: inline-flex; align-items: center; gap: 0.35rem;" data-needed-form data-pc-id="<?php echo $pc['id']; ?>" data-needed-action="manual">
+                                                    <input type="hidden" name="action" value="update_quantity_needed">
+                                                    <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
+                                                    <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                                                    <input type="number" name="quantity_needed" data-needed-input value="<?php echo $pc['quantity_needed']; ?>" 
+                                                           min="1" 
+                                                           style="width: 56px; padding: 0.25rem; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-weight: 600; color: #6366f1;">
+                                                    <button type="submit" class="btn btn-sm" style="background: #6366f1; color: white; padding: 0.25rem 0.4rem; border: none; border-radius: 4px; font-size: 0.75rem;" data-needed-btn="check">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" style="display: inline;" data-needed-form data-pc-id="<?php echo $pc['id']; ?>" data-needed-action="plus">
+                                                    <input type="hidden" name="action" value="update_quantity_needed">
+                                                    <input type="hidden" name="pc_id" value="<?php echo $pc['id']; ?>">
+                                                    <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                                                    <input type="hidden" name="change" value="1">
+                                                    <button type="submit" class="btn btn-sm" style="background: #6366f1; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem;" data-needed-btn="plus">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="progress-bar" style="width: 100px;">
-                                                <div class="progress-fill" style="width: <?php echo $progress; ?>%"></div>
+                                                <div class="progress-fill" data-progress-fill style="width: <?php echo $progress; ?>%"></div>
                                             </div>
-                                            <small style="color: #64748b;"><?php echo number_format($progress, 1); ?>%</small>
+                                            <small style="color: #64748b;" data-progress-text><?php echo number_format($progress, 1); ?>%</small>
                                         </td>
                                         <td><?php echo number_format($component_price, 2); ?>€</td>
-                                        <td><strong><?php echo number_format($total_component_cost, 2); ?>€</strong></td>
+                                        <td><strong data-total-cost><?php echo number_format($total_component_cost, 2); ?>€</strong></td>
                                         <td>
                                             <?php if ($pc['casier'] || $pc['tiroir'] || $pc['compartiment']): ?>
                                                 <small style="color: #64748b;">
@@ -1715,7 +2372,7 @@ try {
                                     $progress = min(100, max(0, $progress));
                                     $item_total_cost = $item['quantity'] * $item['unit_price'];
                                     ?>
-                                    <tr>
+                                    <tr data-item-row="<?php echo $item['id']; ?>">
                                         <td>
                                             <strong><?php echo htmlspecialchars($item['name']); ?></strong>
                                             <?php if ($item['description']): ?>
@@ -1740,20 +2397,26 @@ try {
                                         <td><?php echo $item['quantity']; ?> <?php echo htmlspecialchars($item['unit']); ?></td>
                                         <td>
                                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                                <button onclick="updateProgress(<?php echo $item['id']; ?>, -25)" 
+                                                <button onclick="updateProgress(<?php echo $item['id']; ?>, -25)" data-item-btn-minus
                                                         style="background: #ef4444; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem;"
-                                                        title="Diminuer la progression">
+                                                        title="Diminuer la progression"
+                                                        <?php echo $completed_quantity <= 0 ? 'disabled' : ''; ?>>
                                                     <i class="fas fa-minus"></i>
                                                 </button>
                                                 <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
                                                     <div class="progress-bar" style="width: 80px;">
-                                                        <div class="progress-fill" style="width: <?php echo $progress; ?>%"></div>
+                                                        <div class="progress-fill" data-progress-fill style="width: <?php echo $progress; ?>%"></div>
                                                     </div>
-                                                    <small style="color: #64748b; font-size: 0.75rem;"><?php echo number_format($completed_quantity, 2); ?> / <?php echo number_format($total_quantity, 2); ?> <?php echo htmlspecialchars($item['unit']); ?></small>
+                                                    <small style="color: #64748b; font-size: 0.75rem;" data-progress-text>
+                                                        <span data-qty-completed><?php echo number_format($completed_quantity, 2); ?></span>
+                                                        / <span data-qty-total><?php echo number_format($total_quantity, 2); ?></span>
+                                                        <span data-qty-unit><?php echo htmlspecialchars($item['unit']); ?></span>
+                                                    </small>
                                                 </div>
-                                                <button onclick="updateProgress(<?php echo $item['id']; ?>, 25)" 
+                                                <button onclick="updateProgress(<?php echo $item['id']; ?>, 25)" data-item-btn-plus
                                                         style="background: #10b981; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem;"
-                                                        title="Augmenter la progression">
+                                                        title="Augmenter la progression"
+                                                        <?php echo $completed_quantity >= $total_quantity ? 'disabled' : ''; ?>>
                                                     <i class="fas fa-plus"></i>
                                                 </button>
                                             </div>
@@ -1994,12 +2657,12 @@ try {
                                         <i class="fas fa-download"></i>
                                         <span>Télécharger</span>
                                     </a>
-                                    <form method="POST" action="delete_project_file.php" style="display: inline;">
+                                    <form method="POST" action="delete_project_file.php" style="display: inline;" data-delete-file-form>
                                         <input type="hidden" name="file_id" value="<?php echo $file['id']; ?>">
                                         <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
-                                        <button type="submit" 
+                                        <button type="button" 
                                                 style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;"
-                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?')">
+                                                onclick="openDeleteFileModal(<?php echo (int)$file['id']; ?>, '<?php echo htmlspecialchars(addslashes($file['display_name'] ?? $file['original_name'] ?? 'Fichier'), ENT_QUOTES); ?>')">
                                             <i class="fas fa-trash"></i>
                                             <span>Supprimer</span>
                                         </button>
@@ -2018,7 +2681,6 @@ try {
                 <?php endif; ?>
             </div>
         </div>
-    </div>
 
     <!-- Modal de modification de fichier -->
     <div id="editFileModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
@@ -2080,9 +2742,43 @@ try {
         </div>
     </div>
 
+    <!-- Modal de suppression de fichier -->
+    <div class="del-modal-backdrop" id="delFileModalBackdrop">
+        <div class="del-modal">
+            <div class="del-modal-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 style="margin: 0 0 0.5rem 0; color: #1f2937; font-size: 1.35rem;">Supprimer ce fichier ?</h3>
+            <div class="del-modal-filename" id="delFileName"></div>
+            <div class="del-modal-warnings">
+                <i class="fas fa-exclamation-circle" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                <strong>Action irréversible.</strong> Le fichier sera définitivement supprimé de votre dossier projet ainsi que de la base de données.
+            </div>
+            <form method="POST" action="delete_project_file.php" id="delFileForm">
+                <input type="hidden" name="file_id" id="delFileId">
+                <input type="hidden" name="project_id" id="delFileProjectId" value="<?php echo $project_id; ?>">
+            </form>
+            <div class="del-modal-actions">
+                <button type="button" class="del-btn cancel" onclick="closeDeleteFileModal()">
+                    <i class="fas fa-times" style="margin-right: 0.4rem;"></i>
+                    Annuler
+                </button>
+                <button type="button" class="del-btn confirm" onclick="confirmDeleteFile()">
+                    <i class="fas fa-trash-alt" style="margin-right: 0.4rem;"></i>
+                    Oui, supprimer définitivement
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Gestion des onglets
         function showTab(tabName) {
+            // Fallback : si l'onglet demandé n'existe pas, revenir à overview
+            const testContent = document.getElementById(tabName);
+            if (!testContent) {
+                tabName = 'overview';
+            }
             // Masquer tous les contenus
             const contents = document.querySelectorAll('.tab-content');
             contents.forEach(content => {
@@ -2240,35 +2936,247 @@ try {
             setupComponentSearch();
         });
 
-        // Fonction pour mettre à jour la progression
+        // ====== MISES À JOUR AJAX (PAS DE RELOAD, PAS DE SAUT D'ONGLET) ======
+
+        const CURRENT_PROJECT_ID = parseInt(document.body.getAttribute('data-project-id') || '0', 10);
+
+        // === Aide : met à jour TOUTES les <tr> d'un composant (overview + onglet) ===
+        function updateAllComponentRows(pcId, data) {
+            const canMinusNeeded = data.quantity_needed > 1;
+            document.querySelectorAll(`tr[data-component-row="${pcId}"]`).forEach(row => {
+                row.querySelectorAll('[data-qty-display]').forEach(el => {
+                    el.textContent = `${data.quantity_used} / ${data.quantity_needed}`;
+                });
+                row.querySelectorAll('[data-qty-input]').forEach(el => {
+                    el.value = data.quantity_used;
+                    el.max = data.quantity_needed;
+                });
+                row.querySelectorAll('[data-qty-suffix]').forEach(el => {
+                    el.textContent = `/ ${data.quantity_needed}`;
+                });
+                row.querySelectorAll('[data-needed-input]').forEach(el => {
+                    el.value = data.quantity_needed;
+                });
+                row.querySelectorAll('[data-progress-fill]').forEach(el => {
+                    el.style.width = `${data.progress_percent}%`;
+                });
+                row.querySelectorAll('[data-progress-text]').forEach(el => {
+                    const decimals = String(data.progress_percent).includes('.') ? 1 : 0;
+                    el.textContent = `${Number(data.progress_percent).toFixed(decimals)}%`;
+                });
+                const canMinusUsed = (data.can_minus_used !== undefined) ? !!data.can_minus_used : !!data.can_minus;
+                const canPlusUsed = (data.can_plus_used !== undefined) ? !!data.can_plus_used : !!data.can_plus;
+                row.querySelectorAll('[data-qty-btn="minus"]').forEach(btn => {
+                    btn.disabled = !canMinusUsed;
+                });
+                row.querySelectorAll('[data-qty-btn="plus"]').forEach(btn => {
+                    btn.disabled = !canPlusUsed;
+                });
+                row.querySelectorAll('[data-needed-btn="minus"]').forEach(btn => {
+                    btn.disabled = !canMinusNeeded;
+                });
+                row.querySelectorAll('[data-total-cost]').forEach(el => {
+                    if (data.total_cost !== undefined) el.textContent = `${data.total_cost}€`;
+                });
+            });
+
+            // Mettre à jour aussi les formulaires nécessaires hors <tr> (modales, etc.)
+            document.querySelectorAll(`[data-needed-form][data-pc-id="${pcId}"]`).forEach(form => {
+                const minusBtn = form.querySelector('[data-needed-btn="minus"]');
+                if (minusBtn) minusBtn.disabled = !canMinusNeeded;
+            });
+        }
+
+        // === Aide : met à jour TOUTES les <tr> d'un project_items (overview + onglet) ===
+        function updateAllItemRows(itemId, data) {
+            document.querySelectorAll(`tr[data-item-row="${itemId}"]`).forEach(row => {
+                row.querySelectorAll('[data-progress-fill]').forEach(el => {
+                    el.style.width = `${data.progress_percent}%`;
+                });
+                row.querySelectorAll('[data-qty-completed]').forEach(el => {
+                    const decimals = String(data.completed_quantity).includes('.') ? 2 : 1;
+                    el.textContent = Number(data.completed_quantity).toFixed(decimals);
+                });
+                row.querySelectorAll('[data-qty-total]').forEach(el => {
+                    const decimals = String(data.total_quantity).includes('.') ? 2 : 1;
+                    el.textContent = Number(data.total_quantity).toFixed(decimals);
+                });
+                row.querySelectorAll('[data-qty-unit]').forEach(el => {
+                    el.textContent = data.unit ?? '';
+                });
+                row.querySelectorAll('[data-progress-text]').forEach(text => {
+                    const decimals = String(data.completed_quantity).includes('.') ? 2 : 1;
+                    const qtyTotal = Number(data.total_quantity).toFixed(
+                        String(data.total_quantity).includes('.') ? 2 : 1
+                    );
+                    const qtyComp = Number(data.completed_quantity).toFixed(decimals);
+                    text.textContent = `${qtyComp} / ${qtyTotal} ${data.unit ?? ''}`;
+                    // Progress % ? on garde la forme actuelle /
+                });
+                row.querySelectorAll('[data-item-btn-minus]').forEach(btn => {
+                    btn.disabled = !data.can_minus;
+                });
+                row.querySelectorAll('[data-item-btn-plus]').forEach(btn => {
+                    btn.disabled = !data.can_plus;
+                });
+            });
+        }
+
+        // === Intercepter TOUS les forms "update_quantity_used" (composants) en AJAX ===
+        document.addEventListener('submit', async function(e) {
+            const form = e.target;
+            if (!(form instanceof HTMLFormElement)) return;
+            const action = form.querySelector('input[name="action"]');
+            if (!action || action.value !== 'update_quantity_used') return;
+            // C'est bien un form de quantité utilisée composant → on l'intercepte !
+            e.preventDefault();
+            e.stopPropagation();
+
+            const fd = new FormData(form);
+            const pcId = parseInt(fd.get('pc_id') || '0', 10);
+            let qtyUsed = parseInt(fd.get('quantity_used') || '0', 10);
+            if (!pcId) return;
+            if (isNaN(qtyUsed) || qtyUsed < 0) qtyUsed = 0;
+
+            // Désactiver TOUS les boutons associés pendant l'AJAX
+            const affectedButtons = document.querySelectorAll(
+                `[data-quantity-form][data-pc-id="${pcId}"] [type="submit"],
+                 tr[data-component-row="${pcId}"] [data-qty-btn]`
+            );
+            affectedButtons.forEach(b => b.disabled = true);
+
+            try {
+                const resp = await fetch('ajax_update_project_quantity.php', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: new URLSearchParams({
+                        project_id: String(CURRENT_PROJECT_ID),
+                        pc_id: String(pcId),
+                        quantity_used: String(qtyUsed)
+                    })
+                });
+                const txt = await resp.text();
+                let data = null;
+                try { data = JSON.parse(txt); }
+                catch (eX) {
+                    const m = txt.match(/\{[\s\S]*\}/);
+                    if (m) data = JSON.parse(m[0]);
+                }
+                if (data && data.success) {
+                    updateAllComponentRows(pcId, data);
+                } else {
+                    alert('Erreur: ' + (data?.message || 'Mise à jour échouée'));
+                    affectedButtons.forEach(b => b.removeAttribute('disabled'));
+                }
+            } catch (err) {
+                alert('Erreur réseau: ' + (err?.message || err));
+                affectedButtons.forEach(b => b.removeAttribute('disabled'));
+            }
+        }, true);
+
+        // === Intercepter TOUS les forms "update_quantity_needed" (composants) en AJAX ===
+        document.addEventListener('submit', async function(e) {
+            const form = e.target;
+            if (!(form instanceof HTMLFormElement)) return;
+            const actionInput = form.querySelector('input[name="action"]');
+            if (!actionInput || actionInput.value !== 'update_quantity_needed') return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            const fd = new FormData(form);
+            const pcId = parseInt(fd.get('pc_id') || '0', 10);
+            let quantityNeeded = parseInt(fd.get('quantity_needed') || '0', 10);
+            let change = parseInt(fd.get('change') || '0', 10);
+            if (!pcId) return;
+
+            const affectedButtons = document.querySelectorAll(
+                `[data-needed-form][data-pc-id="${pcId}"] [type="submit"],
+                 tr[data-component-row="${pcId}"] [data-needed-btn]`
+            );
+            affectedButtons.forEach(b => b.disabled = true);
+
+            const body = new URLSearchParams({
+                project_id: String(CURRENT_PROJECT_ID),
+                pc_id: String(pcId),
+            });
+            if (!isNaN(change) && change !== 0) {
+                body.append('change', String(change));
+            } else if (!isNaN(quantityNeeded) && quantityNeeded > 0) {
+                body.append('quantity_needed', String(quantityNeeded));
+            } else {
+                body.append('change', '0');
+            }
+
+            try {
+                const resp = await fetch('ajax_update_project_component_needed.php', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: body
+                });
+                const txt = await resp.text();
+                let data = null;
+                try { data = JSON.parse(txt); }
+                catch (eX) {
+                    const m = txt.match(/\{[\s\S]*\}/);
+                    if (m) data = JSON.parse(m[0]);
+                }
+                if (data && data.success) {
+                    updateAllComponentRows(pcId, data);
+                    if (data.used_adjusted) {
+                        console.warn(`Quantité utilisée ajustée automatiquement à ${data.quantity_used} car besoin réduit`);
+                    }
+                } else {
+                    alert('Erreur: ' + (data?.message || 'Mise à jour échouée'));
+                    affectedButtons.forEach(b => b.removeAttribute('disabled'));
+                }
+            } catch (err) {
+                alert('Erreur réseau: ' + (err?.message || err));
+                affectedButtons.forEach(b => b.removeAttribute('disabled'));
+            }
+        }, true);
+
+        // === Nouvelle fonction updateProgress : AJAX, PLUS DE submit form => pas de reload / saut ===
         function updateProgress(itemId, change) {
-            // Créer un formulaire pour envoyer la requête
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.style.display = 'none';
-            
-            // Ajouter les champs cachés
-            const actionInput = document.createElement('input');
-            actionInput.type = 'hidden';
-            actionInput.name = 'action';
-            actionInput.value = 'update_progress';
-            form.appendChild(actionInput);
-            
-            const itemIdInput = document.createElement('input');
-            itemIdInput.type = 'hidden';
-            itemIdInput.name = 'item_id';
-            itemIdInput.value = itemId;
-            form.appendChild(itemIdInput);
-            
-            const changeInput = document.createElement('input');
-            changeInput.type = 'hidden';
-            changeInput.name = 'progress_change';
-            changeInput.value = change;
-            form.appendChild(changeInput);
-            
-            // Ajouter le formulaire au document et le soumettre
-            document.body.appendChild(form);
-            form.submit();
+            if (!CURRENT_PROJECT_ID) return;
+            itemId = parseInt(itemId, 10);
+            change = parseInt(change, 10);
+            if (!itemId) return;
+
+            // Désactiver temporairement les 2 boutons (overview + onglet)
+            const btns = document.querySelectorAll(
+                `tr[data-item-row="${itemId}"] [data-item-btn-minus],
+                 tr[data-item-row="${itemId}"] [data-item-btn-plus]`
+            );
+            btns.forEach(b => b.disabled = true);
+
+            fetch('ajax_update_project_progress.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: new URLSearchParams({
+                    project_id: String(CURRENT_PROJECT_ID),
+                    item_id: String(itemId),
+                    progress_change: String(change)
+                })
+            })
+            .then(r => r.text())
+            .then(txt => {
+                let data = null;
+                try { data = JSON.parse(txt); }
+                catch (eX) {
+                    const m = txt.match(/\{[\s\S]*\}/);
+                    if (m) data = JSON.parse(m[0]);
+                }
+                if (data && data.success) {
+                    updateAllItemRows(itemId, data);
+                } else {
+                    alert('Erreur: ' + (data?.message || 'Progression échouée'));
+                    btns.forEach(b => b.removeAttribute('disabled'));
+                }
+            })
+            .catch(err => {
+                alert('Erreur réseau: ' + (err?.message || err));
+                btns.forEach(b => b.removeAttribute('disabled'));
+            });
         }
 
         // Fonctions pour le renommage des fichiers
@@ -2431,6 +3339,38 @@ try {
                 submitBtn.disabled = false;
             });
         }
+
+        // Fonctions pour la modal de suppression de fichier
+        function openDeleteFileModal(fileId, fileName) {
+            document.getElementById('delFileId').value = fileId;
+            document.getElementById('delFileName').textContent = fileName;
+            document.getElementById('delFileModalBackdrop').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteFileModal() {
+            document.getElementById('delFileModalBackdrop').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function confirmDeleteFile() {
+            document.getElementById('delFileForm').submit();
+        }
+
+        // Fermer la modale suppression en cliquant à l'extérieur
+        document.addEventListener('click', function(event) {
+            const backdrop = document.getElementById('delFileModalBackdrop');
+            if (event.target === backdrop) {
+                closeDeleteFileModal();
+            }
+        });
+
+        // Fermer la modale suppression avec la touche Échap
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && document.getElementById('delFileModalBackdrop').classList.contains('active')) {
+                closeDeleteFileModal();
+            }
+        });
         
         // Fonctions pour la modification d'éléments
         function editItem(itemId, name, type, quantity, unit, unitPrice, description) {
@@ -2555,8 +3495,385 @@ try {
         </div>
     </div>
 
+    <!-- MODAL UPLOAD IMAGE PROJET -->
+    <div class="image-modal-backdrop" id="imageModalBackdrop">
+        <div class="image-modal" onclick="event.stopPropagation()">
+            <h3><i class="fas fa-camera" style="color:#667eea;margin-right:8px;"></i>Image du projet</h3>
+            
+            <div class="drop-zone" id="dropZone" onclick="document.getElementById('projectImageInput').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p><b>Cliquez pour choisir</b> ou glissez-déposez une image</p>
+                <p class="small">Formats acceptés : JPG, PNG, GIF, WebP — Max 10 Mo</p>
+                <input type="file" id="projectImageInput" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none">
+            </div>
+            
+            <div id="fileNameDisplay" class="file-name" style="display:none;"></div>
+            
+            <div class="upload-progress" id="uploadProgress">
+                <div style="font-size:0.85rem;color:#475569;font-weight:600;">
+                    <i class="fas fa-spinner fa-spin" style="margin-right:6px;color:#667eea;"></i>
+                    <span id="uploadStatusText">Envoi en cours...</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+            
+            <div class="upload-success-msg" id="uploadSuccessMsg">
+                <i class="fas fa-check-circle" style="margin-right:6px;"></i>
+                <span id="successText">Image mise à jour avec succès !</span>
+            </div>
+            <div class="upload-error-msg" id="uploadErrorMsg">
+                <i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i>
+                <span id="errorText">Erreur inconnue</span>
+            </div>
+            
+            <div class="image-modal-actions">
+                <button type="button" class="modal-btn cancel" onclick="closeImageModal()">Annuler</button>
+                <button type="button" id="confirmUploadBtn" class="modal-btn primary" disabled onclick="confirmUpload()">
+                    <i class="fas fa-upload"></i> Envoyer l'image
+                </button>
+            </div>
+        </div>
+    </div>
+
     <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
         Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
     </footer>
+
+    <script>
+    if (typeof CURRENT_PROJECT_ID === 'undefined' || !CURRENT_PROJECT_ID) {
+        window.CURRENT_PROJECT_ID = <?php echo (int)$project_id; ?>;
+    }
+    
+    let selectedFile = null;
+    
+    function openImageModal() {
+        resetImageModal();
+        document.getElementById('imageModalBackdrop').classList.add('active');
+    }
+    
+    function closeImageModal() {
+        document.getElementById('imageModalBackdrop').classList.remove('active');
+        setTimeout(resetImageModal, 250);
+    }
+    
+    function resetImageModal() {
+        selectedFile = null;
+        document.getElementById('projectImageInput').value = '';
+        document.getElementById('fileNameDisplay').style.display = 'none';
+        document.getElementById('fileNameDisplay').textContent = '';
+        document.getElementById('confirmUploadBtn').disabled = true;
+        document.getElementById('uploadProgress').classList.remove('active');
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('uploadSuccessMsg').classList.remove('show');
+        document.getElementById('uploadErrorMsg').classList.remove('show');
+        if (document.getElementById('dropZone')) document.getElementById('dropZone').classList.remove('dragover');
+    }
+    
+    document.getElementById('imageModalBackdrop').addEventListener('click', function(e) {
+        if (e.target === this) closeImageModal();
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('imageModalBackdrop').classList.contains('active')) {
+            closeImageModal();
+        }
+    });
+    
+    const fileInput = document.getElementById('projectImageInput');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            handleFileSelect(e.target.files[0]);
+        });
+    }
+    
+    const dropZone = document.getElementById('dropZone');
+    if (dropZone) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+            dropZone.addEventListener(evt, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropZone.addEventListener(evt, () => dropZone.classList.add('dragover'));
+        });
+        
+        ['dragleave', 'drop'].forEach(evt => {
+            dropZone.addEventListener(evt, () => dropZone.classList.remove('dragover'));
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            if (dt && dt.files && dt.files[0]) handleFileSelect(dt.files[0]);
+        });
+    }
+    
+    function handleFileSelect(file) {
+        if (!file) return;
+        
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            showErrorMsg('Type de fichier invalide. Utilisez JPG, PNG, GIF ou WebP.');
+            return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+            showErrorMsg('Fichier trop volumineux. Maximum 10 Mo.');
+            return;
+        }
+        
+        selectedFile = file;
+        document.getElementById('fileNameDisplay').style.display = 'block';
+        document.getElementById('fileNameDisplay').innerHTML = '<i class="fas fa-file-image" style="margin-right:6px;color:#667eea;"></i>' +
+            file.name + ' <span style="color:#94a3b8;">(' + formatFileSize(file.size) + ')</span>';
+        document.getElementById('confirmUploadBtn').disabled = false;
+        document.getElementById('uploadErrorMsg').classList.remove('show');
+        document.getElementById('uploadSuccessMsg').classList.remove('show');
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+    
+    function showErrorMsg(msg) {
+        const el = document.getElementById('uploadErrorMsg');
+        document.getElementById('errorText').textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 5000);
+    }
+    
+    function showSuccessMsg(msg) {
+        const el = document.getElementById('uploadSuccessMsg');
+        document.getElementById('successText').textContent = msg || 'Image mise à jour avec succès !';
+        el.classList.add('show');
+    }
+    
+    function confirmUpload() {
+        if (!selectedFile) return;
+        
+        const formData = new FormData();
+        formData.append('action', 'upload');
+        formData.append('project_id', CURRENT_PROJECT_ID);
+        formData.append('project_image', selectedFile);
+        
+        const confirmBtn = document.getElementById('confirmUploadBtn');
+        const progress = document.getElementById('uploadProgress');
+        const progressFill = document.getElementById('progressFill');
+        const statusText = document.getElementById('uploadStatusText');
+        
+        confirmBtn.disabled = true;
+        progress.classList.add('active');
+        document.getElementById('uploadErrorMsg').classList.remove('show');
+        document.getElementById('uploadSuccessMsg').classList.remove('show');
+        progressFill.style.width = '20%';
+        statusText.textContent = 'Préparation de l\'envoi...';
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'upload_project_image.php', true);
+        
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                const pct = Math.round((e.loaded / e.total) * 80) + 20;
+                progressFill.style.width = pct + '%';
+                statusText.textContent = 'Envoi : ' + pct + '%';
+            }
+        };
+        
+        xhr.onloadstart = function() {
+            progressFill.style.width = '15%';
+        };
+        
+        xhr.onload = function() {
+            progressFill.style.width = '100%';
+            let resp = null;
+            let rawResponse = xhr.responseText || '';
+            try {
+                // Tentative 1 : JSON.parse direct
+                resp = JSON.parse(rawResponse);
+            } catch (e) {
+                // Tentative 2 : FALLBACK - extraire le JSON VALIDE même s'il y a du texte avant/après
+                // (ex: BOM UTF-8, notice PHP, warning, echo parasite...)
+                try {
+                    let extracted = null;
+                    const matchObj = rawResponse.match(/\{[\s\S]*\}/);
+                    if (matchObj && matchObj[0]) extracted = matchObj[0];
+                    if (!extracted) {
+                        const matchArr = rawResponse.match(/\[[\s\S]*\]/);
+                        if (matchArr && matchArr[0]) extracted = matchArr[0];
+                    }
+                    if (extracted) {
+                        resp = JSON.parse(extracted);
+                    }
+                } catch (e2) {
+                    resp = null;
+                }
+            }
+
+            if (resp !== null) {
+                if (resp.success) {
+                    statusText.textContent = 'Terminé !';
+                    showSuccessMsg(resp.message);
+                    
+                    const avatarImg = document.getElementById('projectAvatarImg');
+                    if (avatarImg && resp.image_path) {
+                        avatarImg.src = resp.image_path;
+                    } else {
+                        setTimeout(() => location.reload(), 900);
+                        return;
+                    }
+                    
+                    setTimeout(() => {
+                        closeImageModal();
+                    }, 1200);
+                } else {
+                    statusText.textContent = 'Erreur';
+                    showErrorMsg(resp.message || 'Erreur inconnue');
+                    confirmBtn.disabled = false;
+                    progress.classList.remove('active');
+                }
+            } else {
+                // ERREUR FINALE : impossible de parser même en fallback
+                statusText.textContent = 'Erreur';
+                let preview = rawResponse || '(réponse vide)';
+                if (preview.length > 300) preview = preview.substring(0, 300) + '... [tronqué]';
+                let statusInfo = xhr.status ? ' (HTTP ' + xhr.status + ')' : '';
+                const contentType = xhr.getResponseHeader && xhr.getResponseHeader('Content-Type') ? ' Content-Type: ' + xhr.getResponseHeader('Content-Type') : '';
+                let fullMsg = 'Réponse invalide du serveur' + statusInfo + contentType + ':\n\n' + preview +
+                    '\n\n--- ASTUCE --- Ouvrez la console (F12) > Network > la requête vers upload_project_image.php > Response pour voir la réponse complète, ou ouvrez le fichier upload_project_image_debug.log sur le serveur.';
+                showErrorMsg('Réponse invalide - consultez upload_project_image_debug.log');
+                console.error('=== ERREUR JSON PARSE ===');
+                console.error('Raw response:', rawResponse);
+                console.error('HTTP status:', xhr.status);
+                console.error('Content-Type:', xhr.getResponseHeader ? xhr.getResponseHeader('Content-Type') : '?');
+                alert(fullMsg);
+                confirmBtn.disabled = false;
+                progress.classList.remove('active');
+            }
+        };
+        
+        xhr.onerror = function() {
+            statusText.textContent = 'Erreur réseau';
+            showErrorMsg('Erreur réseau - vérifiez votre connexion');
+            confirmBtn.disabled = false;
+            progress.classList.remove('active');
+        };
+        
+        xhr.send(formData);
+    }
+    
+    function deleteProjectImage() {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer l\'image du projet ?')) return;
+        
+        const formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('project_id', CURRENT_PROJECT_ID);
+        
+        fetch('upload_project_image.php', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(resp => {
+                if (resp.success) {
+                    location.reload();
+                } else {
+                    alert(resp.message || 'Erreur');
+                }
+            })
+            .catch(e => alert('Erreur: ' + e.message));
+    }
+
+    /* ===== MODALE RENOMMER PROJET (project_detail) ===== */
+    function openRenameProjectModal(projectId, name, description, status) {
+        document.getElementById('renameProjectDetailId').value = projectId;
+        document.getElementById('renameProjectDetailCurrentName').textContent = String(name || '');
+        const inpN = document.getElementById('renameProjectDetailName');
+        const inpD = document.getElementById('renameProjectDetailDesc');
+        const selS = document.getElementById('renameProjectDetailStatus');
+        inpN.value = String(name || '');
+        inpD.value = String(description || '');
+        const wanted = String(status || 'En cours');
+        let found = false;
+        for (let i=0;i<selS.options.length;i++) {
+            if (String(selS.options[i].value).toLowerCase() === wanted.toLowerCase()) {
+                selS.selectedIndex = i; found = true; break;
+            }
+        }
+        if (!found) selS.value = 'En cours';
+        document.getElementById('renameProjectDetailOverlay').classList.add('open');
+        setTimeout(() => inpN.focus(), 50);
+    }
+    function closeRenameProjectModal() {
+        document.getElementById('renameProjectDetailOverlay').classList.remove('open');
+    }
+    document.addEventListener('click', function renameOverlayClick(e) {
+        const ov = document.getElementById('renameProjectDetailOverlay');
+        if (ov && e.target === ov) closeRenameProjectModal();
+    });
+    document.addEventListener('keydown', function renameOverlayEsc(e) {
+        if (e.key === 'Escape' && document.getElementById('renameProjectDetailOverlay')?.classList.contains('open')) {
+            closeRenameProjectModal();
+        }
+    });
+    document.addEventListener('submit', function renameFormSubmit(e) {
+        const f = e.target;
+        if (f && f.id === 'renameProjectDetailForm') {
+            const name = (f.querySelector('#renameProjectDetailName').value || '').trim();
+            if (!name) { e.preventDefault(); alert('Le nom du projet est obligatoire.'); document.getElementById('renameProjectDetailName').focus(); return; }
+        }
+    }, true);
+    </script>
+
+    <!-- ===== MODALE RENOMMER PROJET ===== -->
+    <div class="rename-project-modal-overlay" id="renameProjectDetailOverlay" role="dialog" aria-modal="true">
+        <div class="rename-project-modal-box" role="document">
+            <form method="POST" action="projects.php" id="renameProjectDetailForm">
+                <input type="hidden" name="action" value="rename_project">
+                <input type="hidden" name="return_to" value="detail">
+                <input type="hidden" name="project_id" id="renameProjectDetailId" value="0">
+                <div class="rename-project-modal-head">
+                    <h3>✏️ Renommer / modifier le projet</h3>
+                    <p>Mettez à jour le nom, la description ou le statut du projet</p>
+                </div>
+                <div class="rename-project-modal-body">
+                    <div class="rename-form-oldname">Nom actuel : <span id="renameProjectDetailCurrentName">—</span></div>
+                    <div class="rename-form-group">
+                        <label for="renameProjectDetailName">Nom du projet <span style="color:#ef4444">*</span></label>
+                        <input type="text" id="renameProjectDetailName" name="name" required maxlength="200"
+                               placeholder="Ex: Projet Robotique">
+                        <div class="rename-hint">
+                            Le nom est utilisé pour le dossier physique <code>projets/NomDuProjet/</code>
+                        </div>
+                    </div>
+                    <div class="rename-form-group">
+                        <label for="renameProjectDetailDesc">Description</label>
+                        <textarea id="renameProjectDetailDesc" name="description" rows="3"
+                                  placeholder="Courte description du projet..."></textarea>
+                    </div>
+                    <div class="rename-form-group">
+                        <label for="renameProjectDetailStatus">Statut</label>
+                        <select id="renameProjectDetailStatus" name="status">
+                            <option value="En cours">🚧 En cours</option>
+                            <option value="Terminé">✅ Terminé</option>
+                            <option value="En pause">⏸️ En pause</option>
+                            <option value="Abandonné">❌ Abandonné</option>
+                            <option value="Planifié">📋 Planifié</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="rename-project-modal-foot">
+                    <button type="button" class="rename-btn-cancel" onclick="closeRenameProjectModal()">
+                        Annuler
+                    </button>
+                    <button type="submit" class="rename-btn-submit">
+                        💾 Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    </div>
 </body>
 </html>

@@ -1,12 +1,12 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Non autorisé']);
-    exit;
+    echo json_encode(['success' => false, 'error' => 'Non autorisé']);
+    exit();
 }
 
 // Vérifier que les données requises sont présentes
@@ -41,12 +41,30 @@ try {
         exit;
     }
     
-    // Créer le nouveau projet
-    $stmt = $pdo->prepare("
-        INSERT INTO projects (owner, name, description, status, created_at, updated_at) 
-        VALUES (?, ?, ?, 'En cours', NOW(), NOW())
-    ");
-    $stmt->execute([$owner, $name, $description]);
+    // Créer le nouveau projet - essayer d'abord avec updated_at
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO projects (owner, name, description, status, created_at, updated_at) 
+            VALUES (?, ?, ?, 'En cours', NOW(), NOW())
+        ");
+        $stmt->execute([$owner, $name, $description]);
+    } catch (Exception $e) {
+        // Si updated_at n'existe pas, essayer sans
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO projects (owner, name, description, status, created_at) 
+                VALUES (?, ?, ?, 'En cours', NOW())
+            ");
+            $stmt->execute([$owner, $name, $description]);
+        } catch (Exception $e2) {
+            // En dernier recours, minimal
+            $stmt = $pdo->prepare("
+                INSERT INTO projects (owner, name, description, status) 
+                VALUES (?, ?, ?, 'En cours')
+            ");
+            $stmt->execute([$owner, $name, $description]);
+        }
+    }
     
     $project_id = $pdo->lastInsertId();
     

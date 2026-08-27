@@ -1,9 +1,9 @@
 <?php
-session_start();
+require_once 'session_init.php';
 
 // Vérification de l'authentification
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: index.php?error=not_logged_in');
     exit();
 }
 

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
 // Vérifier si l'utilisateur est connecté
@@ -52,6 +52,28 @@ $suppliers = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Créer un Composant</title>
     <style>
+        :root {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --accent-indigo: #667eea;
+            --accent-purple: #764ba2;
+            --accent-green: #48bb78;
+            --accent-red: #f56565;
+            --accent-amber: #ed8936;
+            --accent-teal: #38b2ac;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -60,119 +82,234 @@ $suppliers = $stmt->fetchAll();
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f0f2f5 0%, #e6e9ef 100%);
             min-height: 100vh;
-            padding: 20px;
+            color: var(--text-primary);
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1480px;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+            padding: 20px;
         }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .app-header {
+            background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
             color: white;
-            padding: 30px;
+            padding: 28px 40px 22px;
             position: relative;
+            overflow: hidden;
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            box-shadow: var(--shadow-lg);
         }
 
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .user-info {
+        .app-header::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            right: 30px;
-            background: rgba(255,255,255,0.15);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-        .nav-section {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(14px);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(14px);
+            padding: 8px 12px 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            font-size: 13px;
+        }
+
+        .user-chip span {
+            color: white;
+            font-weight: 500;
+        }
+
+        .logout-link {
+            background: rgba(255, 255, 255, 0.22);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+        }
+
+        .logout-link:hover {
+            background: rgba(255, 255, 255, 0.34);
+            transform: translateY(-1px);
         }
 
         .nav-buttons {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
-            justify-content: center;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
         }
 
         .nav-buttons a {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.16);
             color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
+            padding: 10px 20px;
+            border-radius: 999px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 13.5px;
+            transition: all 0.25s ease;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            display: flex;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
         }
 
         .nav-buttons a:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.28);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
         }
 
         .nav-buttons a.active {
-            background: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.38);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+            border-color: rgba(255, 255, 255, 0.45);
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 13.5px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            line-height: 1.3;
         }
 
-        .btn-primary {
-            background: #4CAF50;
+        .btn:hover {
+            transform: translateY(-1.5px);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-indigo {
+            background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
             color: white;
         }
 
-        .btn-secondary {
-            background: #2196F3;
-            color: white;
-        }
-
-        .btn-info {
-            background: #17a2b8;
+        .btn-purple {
+            background: linear-gradient(135deg, #9f7aea 0%, var(--accent-purple) 100%);
             color: white;
         }
 
         .btn-danger {
-            background: #f44336;
+            background: linear-gradient(135deg, #fc8181 0%, var(--accent-red) 100%);
             color: white;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-ghost:hover {
+            background: #f7fafc;
+            color: var(--text-primary);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #68d391 0%, var(--accent-green) 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #4fd1c5 0%, var(--accent-teal) 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f6ad55 0%, var(--accent-amber) 100%);
+            color: white;
         }
 
         .content {
@@ -335,10 +472,15 @@ $suppliers = $stmt->fetchAll();
                 grid-template-columns: 1fr;
             }
             
-            .user-info {
-                position: static;
-                text-align: center;
-                margin-bottom: 15px;
+            .user-chip {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                gap: 14px;
             }
             
             .nav-buttons {
@@ -350,23 +492,27 @@ $suppliers = $stmt->fetchAll();
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="user-info">
-                👤 <?php echo htmlspecialchars($_SESSION['user_email']); ?>
-                <a href="logout.php" style="margin-left: 15px; color: #dc3545; text-decoration: none; font-weight: bold;">🚪 Déconnexion</a>
-            </div>
-            <h1>➕ Créer un Composant</h1>
-            
-            <div class="nav-section">
-                <div class="nav-buttons">
-                    <a href="components.php">📦 Composants</a>
-                    <a href="create_component.php" class="active">➕ Créer</a>
-                    <a href="projects.php">🚀 Projets</a>
-                    <a href="settings.php">⚙️ Paramètres</a>
+        <div class="app-header">
+        <div class="header-top">
+            <div class="header-title">
+                <div class="header-icon">➕</div>
+                <div>
+                    <h1>Créer un Composant</h1>
+                    <p>Ajouter un nouveau composant électronique à l'inventaire</p>
                 </div>
             </div>
+            <div class="user-chip">
+                <span>👤 <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'Utilisateur'); ?></span>
+                <a href="logout.php" class="logout-link">🚪 Déconnexion</a>
+            </div>
         </div>
-
+        <div class="nav-buttons">
+            <a href="components.php">📦 Composants</a>
+            <a href="create_component.php" class="active">➕ Créer</a>
+            <a href="projects.php">🚀 Projets</a>
+            <a href="settings.php">⚙️ Paramètres</a>
+        </div>
+        </div>
         <div class="content">
             <!-- Messages de succès et d'erreur -->
             <?php if (isset($_GET['success'])): ?>
@@ -394,10 +540,13 @@ $suppliers = $stmt->fetchAll();
                             echo "❌ La quantité doit être un nombre positif.";
                             break;
                         case 'add_failed':
-                            echo "❌ Erreur lors de l'ajout du composant.";
+                            echo "❌ Erreur lors de l'ajout du composant. Veuillez réessayer.";
                             break;
                         case 'database_error':
                             echo "❌ Erreur de base de données.";
+                            if (isset($_GET['message']) && !empty($_GET['message'])) {
+                                echo "<br><small style='opacity:0.8;'>Détail : " . htmlspecialchars($_GET['message']) . "</small>";
+                            }
                             break;
                         default:
                             echo "❌ Une erreur s'est produite.";
@@ -557,12 +706,11 @@ $suppliers = $stmt->fetchAll();
                 </form>
             </div>
         </div>
-    </div>
 
-    <script>
-    // Variables globales
-    let packageTimeout;
-    let currentPackages = [];
+        <script>
+        // Variables globales
+        let packageTimeout;
+        let currentPackages = [];
     
     function toggleNewManufacturer() {
         const manufacturerSelect = document.getElementById('manufacturer');
@@ -705,12 +853,47 @@ $suppliers = $stmt->fetchAll();
                 fetch('get_packages.php?search=' + encodeURIComponent(query))
                     .then(response => response.json())
                     .then(packages => {
+                        if (Array.isArray(packages) && packages.length === 1 && packages[0].name && 
+                            packages[0].name.toLowerCase() === query.toLowerCase()) {
+                            const exactPkg = packages[0];
+                            if (exactPkg.pin_count) {
+                                document.getElementById('pins').value = exactPkg.pin_count;
+                            }
+                            checkAndSetPackageImage(exactPkg.name);
+                        }
                         displayPackageSuggestions(packages, suggestionsDiv, packageInput);
                     })
                     .catch(error => {
                         console.error('Erreur lors de la récupération des packages:', error);
                     });
             }, 300);
+        });
+        
+        packageInput.addEventListener('blur', function() {
+            const query = this.value.trim();
+            if (query.length >= 2) {
+                fetch('get_packages.php?search=' + encodeURIComponent(query))
+                    .then(response => response.json())
+                    .then(packages => {
+                        if (Array.isArray(packages)) {
+                            const exactMatch = packages.find(p => 
+                                (typeof p === 'string' ? p : p.name).toLowerCase() === query.toLowerCase()
+                            );
+                            if (exactMatch) {
+                                const pkg = typeof exactMatch === 'string' ? { name: exactMatch } : exactMatch;
+                                if (pkg.pin_count) {
+                                    document.getElementById('pins').value = pkg.pin_count;
+                                }
+                                checkAndSetPackageImage(pkg.name);
+                            } else {
+                                checkAndSetPackageImage(query);
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        checkAndSetPackageImage(query);
+                    });
+            }
         });
         
         // Cacher les suggestions quand on clique ailleurs
@@ -729,13 +912,36 @@ $suppliers = $stmt->fetchAll();
             return;
         }
         
-        packages.forEach(packageName => {
+        packages.forEach(pkg => {
+            const packageName = typeof pkg === 'string' ? pkg : pkg.name;
+            const pinCount = typeof pkg === 'object' && pkg.pin_count ? pkg.pin_count : null;
+            
             const suggestionItem = document.createElement('div');
             suggestionItem.className = 'suggestion-item';
-            suggestionItem.textContent = packageName;
+            suggestionItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center;';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = packageName;
+            nameSpan.style.fontWeight = '500';
+            
+            let infoHtml = '';
+            if (pinCount) {
+                infoHtml += `<span style="color: #666; font-size: 12px; margin-left: 10px;">${pinCount} pins</span>`;
+            }
+            if (typeof pkg === 'object' && pkg.mounting_type) {
+                infoHtml += `<span style="color: #888; font-size: 11px; margin-left: 8px; background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">${pkg.mounting_type}</span>`;
+            }
+            
+            suggestionItem.innerHTML = `<span style="font-weight:500;">${packageName}</span>${infoHtml}`;
+            
             suggestionItem.onclick = () => {
                 inputElement.value = packageName;
                 suggestionsDiv.style.display = 'none';
+                
+                if (pinCount) {
+                    document.getElementById('pins').value = pinCount;
+                }
+                
                 checkAndSetPackageImage(packageName);
             };
             suggestionsDiv.appendChild(suggestionItem);
@@ -818,14 +1024,15 @@ $suppliers = $stmt->fetchAll();
         }
     }
     
-    // Initialiser l'autocomplétion au chargement de la page
-    document.addEventListener('DOMContentLoaded', function() {
-        setupPackageAutocomplete();
-    });
-    </script>
+        // Initialiser l'autocomplétion au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupPackageAutocomplete();
+        });
+        </script>
 
-    <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
-        Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
-    </footer>
+        <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em; border-radius: var(--radius-lg); max-width: 1480px; margin-left: auto; margin-right: auto;">
+            Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
+        </footer>
+    </div>
 </body>
 </html>

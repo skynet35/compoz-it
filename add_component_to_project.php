@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
 // Vérifier si l'utilisateur est connecté
@@ -53,8 +53,16 @@ try {
     if ($existing) {
         // Mettre à jour la quantité existante
         $new_quantity = $existing['quantity_needed'] + $quantity;
-        $stmt = $pdo->prepare("UPDATE project_components SET quantity_needed = ?, notes = ?, updated_at = NOW() WHERE id = ?");
-        $stmt->execute([$new_quantity, $notes, $existing['id']]);
+        
+        // Essayer d'abord avec updated_at si la colonne existe
+        try {
+            $stmt = $pdo->prepare("UPDATE project_components SET quantity_needed = ?, notes = ?, updated_at = NOW() WHERE id = ?");
+            $stmt->execute([$new_quantity, $notes, $existing['id']]);
+        } catch (Exception $e) {
+            // Si updated_at n'existe pas, faire sans
+            $stmt = $pdo->prepare("UPDATE project_components SET quantity_needed = ?, notes = ? WHERE id = ?");
+            $stmt->execute([$new_quantity, $notes, $existing['id']]);
+        }
         
         echo json_encode([
             'success' => true, 

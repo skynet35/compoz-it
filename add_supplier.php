@@ -1,14 +1,12 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php?error=not_logged_in');
     exit();
 }
 
-// Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $website = trim($_POST['website'] ?? '');
@@ -17,9 +15,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $address = trim($_POST['address'] ?? '');
     $notes = trim($_POST['notes'] ?? '');
     
-    // Gestion du logo
+    function cleanSupplierFilename($name, $ext = null) {
+        $name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
+        $name = strtolower(trim($name));
+        $name = preg_replace('/[^a-z0-9._-]+/', '_', $name);
+        $name = preg_replace('/_+/', '_', $name);
+        $name = trim($name, '_');
+        if ($ext !== null) {
+            $name .= '.' . ltrim(strtolower($ext), '.');
+        }
+        return $name;
+    }
+    
     $logo_path = null;
-    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK && !empty($name)) {
         $upload_dir = 'img/';
         
         if (!is_dir($upload_dir)) {
@@ -27,10 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         $file_extension = strtolower(pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION));
-        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
         
         if (in_array($file_extension, $allowed_extensions)) {
-            $filename = 'supplier_logo_' . uniqid() . '.' . $file_extension;
+            $filename = 'supplier_' . cleanSupplierFilename($name) . '_' . time() . '.' . $file_extension;
             $target_path = $upload_dir . $filename;
             
             if (move_uploaded_file($_FILES['logo']['tmp_name'], $target_path)) {
@@ -39,14 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Validation
     if (empty($name)) {
         $error = "Le nom du fournisseur est obligatoire.";
     } else {
         try {
             $pdo = getConnection();
             
-            // Insérer le fournisseur
             $stmt = $pdo->prepare("
                 INSERT INTO suppliers (name, website, email, phone, address, logo_path, notes, owner) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -66,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result) {
                 $supplier_id = $pdo->lastInsertId();
                 
-                // Traiter les contacts
                 $contacts = $_POST['contacts'] ?? [];
                 foreach ($contacts as $contact) {
                     $contact_name = trim($contact['name'] ?? '');
@@ -110,169 +116,342 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter un Fournisseur - ECDB</title>
+    <title>Ajouter un Fournisseur</title>
     <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-muted: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent-indigo: #6366f1;
+            --accent-indigo-light: #e0e7ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
+            --accent-orange: #f97316;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
+            color: var(--text-primary);
+        }
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
             padding: 20px;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
+        .app-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
-            text-align: center;
+            border-radius: var(--radius-xl);
+            padding: 28px 32px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.2);
+            position: relative;
+            overflow: hidden;
         }
-
-        .content {
-            padding: 30px;
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+            border-radius: 50%;
         }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .logout-link {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .logout-link:hover { background: rgba(255,255,255,0.3); }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-buttons a {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-buttons a:hover {
+            background: rgba(255,255,255,0.28);
+            transform: translateY(-1px);
+        }
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0); }
+        .btn-indigo  { background: var(--accent-indigo); color: white; }
+        .btn-purple  { background: var(--accent-purple); color: white; }
+        .btn-danger  { background: var(--accent-red); color: white; }
+        .btn-ghost   { background: var(--bg-muted); color: var(--text-secondary); }
+        .btn-ghost:hover { background: #e2e8f0; }
+        .btn-sm      { padding: 6px 11px; font-size: 12px; border-radius: 6px; gap: 4px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-primary { background: var(--accent-green); color: white; }
+        .btn-secondary { background: var(--accent-blue); color: white; }
+        .btn-success { background: var(--accent-green); color: white; }
 
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+        }
         .form-group {
             margin-bottom: 20px;
         }
-
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 13px;
         }
-
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
             font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            background: var(--bg-card);
+            color: var(--text-primary);
         }
-
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
         .form-group textarea {
             resize: vertical;
             min-height: 80px;
         }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: inline-block;
-            margin-right: 10px;
-        }
-
-        .btn-primary {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border: 1px solid #f5c6cb;
-        }
-
-        .contacts-section {
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            background: #f8f9fa;
-        }
-
-        .contact-item {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: white;
-            position: relative;
-        }
-
-        .contact-header {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .contact-title {
-            font-weight: bold;
-            color: #495057;
-        }
-
-        .remove-contact {
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
+        .error {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            border: 1px solid #fecaca;
+            font-size: 14px;
+        }
+        .contacts-section {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-top: 24px;
+            background: var(--bg-muted);
+        }
+        .contacts-section h3 {
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .contacts-section > p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        .contact-item {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 15px;
+            background: var(--bg-card);
+            position: relative;
+        }
+        .contact-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .contact-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .remove-contact {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+        .remove-contact:hover {
+            background: #dc2626;
+        }
+        .small-muted {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            display: block;
+        }
+        .form-actions {
+            margin-top: 30px;
+            text-align: center;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        footer {
+            margin-top: 2rem;
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            border-radius: var(--radius-lg);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>➕ Ajouter un Fournisseur</h1>
-            <p>Créez une nouvelle fiche fournisseur</p>
-        </div>
+        <header class="app-header">
+            <div class="header-top">
+                <div class="header-title">
+                    <div class="header-icon">➕</div>
+                    <div>
+                        <h1>Ajouter un Fournisseur</h1>
+                        <p>Enregistrer un nouveau fournisseur avec ses contacts et son logo</p>
+                    </div>
+                </div>
+                <div class="user-chip">
+                    <span>👤 <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'Utilisateur'); ?></span>
+                    <a href="logout.php" class="logout-link">🚪 Déconnexion</a>
+                </div>
+            </div>
+            <nav class="nav-buttons">
+                <a href="suppliers.php">← Fournisseurs</a>
+                <a href="components.php">📦 Composants</a>
+                <a href="projects.php">🚀 Projets</a>
+                <a href="settings.php">⚙️ Paramètres</a>
+            </nav>
+        </header>
 
-        <div class="content">
+        <div class="content-card">
             <div style="margin-bottom: 20px;">
-                <a href="suppliers.php" class="btn btn-secondary">← Retour aux fournisseurs</a>
+                <a href="suppliers.php" class="btn btn-ghost">← Retour aux fournisseurs</a>
             </div>
 
             <?php if (isset($error)): ?>
@@ -308,8 +487,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-group">
                     <label for="logo">Logo de l'entreprise</label>
-                    <input type="file" id="logo" name="logo" accept="image/*">
-                    <small style="color: #666;">Formats acceptés: JPG, PNG, GIF, WebP</small>
+                    <input type="file" id="logo" name="logo" accept="image/*,.svg">
+                    <span class="small-muted">Formats acceptés: JPG, PNG, GIF, WebP, SVG</span>
                 </div>
 
                 <div class="form-group">
@@ -319,21 +498,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="contacts-section">
                     <h3>👥 Contacts</h3>
-                    <p style="margin-bottom: 15px; color: #666;">Ajoutez les contacts de ce fournisseur</p>
+                    <p>Ajoutez les contacts de ce fournisseur</p>
                     
                     <div id="contacts-container">
-                        <!-- Les contacts seront ajoutés ici -->
                     </div>
                     
                     <button type="button" onclick="addContact()" class="btn btn-secondary">➕ Ajouter un contact</button>
                 </div>
 
-                <div style="margin-top: 30px; text-align: center;">
+                <div class="form-actions">
                     <button type="submit" class="btn btn-primary">💾 Enregistrer le fournisseur</button>
-                    <a href="suppliers.php" class="btn btn-secondary">Annuler</a>
+                    <a href="suppliers.php" class="btn btn-ghost">Annuler</a>
                 </div>
             </form>
         </div>
+
+        <footer>
+            Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
+        </footer>
     </div>
 
     <script>
@@ -350,8 +532,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Nom *</label>
-                        <input type="text" name="contacts[${contactIndex}][name]" required>
+                        <label>Nom (facultatif)</label>
+                        <input type="text" name="contacts[${contactIndex}][name]">
                     </div>
                     <div class="form-group">
                         <label>Poste</label>
@@ -380,15 +562,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function removeContact(button) {
             button.closest('.contact-item').remove();
         }
-
-        // Ajouter un contact par défaut
-        document.addEventListener('DOMContentLoaded', function() {
-            addContact();
-        });
     </script>
-
-    <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
-        Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
-    </footer>
 </body>
 </html>

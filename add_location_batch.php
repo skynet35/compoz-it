@@ -1,8 +1,7 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
@@ -10,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 $pdo = getConnection();
+$storageTypes = getLocationStorageTypes();
 
 $error_message = '';
 $success_count = 0;
@@ -21,8 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tiroirs_vertical = intval($_POST['tiroirs_vertical'] ?? 3);
     $compartiments_par_tiroir = intval($_POST['compartiments_par_tiroir'] ?? 4);
     $description = trim($_POST['description'] ?? '');
+    $storage_type = trim($_POST['storage_type'] ?? 'casier');
+
+    if (!isset($storageTypes[$storage_type])) {
+        $storage_type = 'casier';
+    }
     
-    // Validation
     if (empty($casier)) {
         $error_message = 'Le nom du casier est obligatoire.';
     } elseif ($tiroirs_horizontal < 1 || $tiroirs_horizontal > 20) {
@@ -38,16 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $created_locations = [];
             $skipped_locations = [];
             
-            // Créer les emplacements en grille
             for ($ligne = 0; $ligne < $tiroirs_vertical; $ligne++) {
-                $tiroir_ligne = $premier_tiroir + ($ligne * 10); // A10, A20, A30, etc.
+                $tiroir_ligne = $premier_tiroir + ($ligne * 10);
                 
                 for ($col = 0; $col < $tiroirs_horizontal; $col++) {
-                    $tiroir = $tiroir_ligne + $col; // A10, A11, A12, A13, A14, A15
+                    $tiroir = $tiroir_ligne + $col;
                     
-                    // Créer les compartiments pour chaque tiroir
                     for ($compartiment = 1; $compartiment <= $compartiments_par_tiroir; $compartiment++) {
-                        // Vérifier si l'emplacement existe déjà
                         $stmt = $pdo->prepare("SELECT id FROM location WHERE owner = ? AND casier = ? AND tiroir = ? AND compartiment = ?");
                         $stmt->execute([$user_id, $casier, $tiroir, $compartiment]);
                         
@@ -56,16 +57,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             continue;
                         }
                         
-                        // Créer l'emplacement
                         $location_description = $description ? "$description (Ligne " . ($ligne + 1) . ", Tiroir $tiroir, Compartiment $compartiment)" : "";
-                        $stmt = $pdo->prepare("INSERT INTO location (owner, casier, tiroir, compartiment, description) VALUES (?, ?, ?, ?, ?)");
-                        $stmt->execute([$user_id, $casier, $tiroir, $compartiment, $location_description]);
+                        $stmt = $pdo->prepare("INSERT INTO location (owner, casier, tiroir, compartiment, description, storage_type) VALUES (?, ?, ?, ?, ?, ?)");
+                        $stmt->execute([$user_id, $casier, $tiroir, $compartiment, $location_description, $storage_type]);
                         
                         $created_locations[] = "$casier-$tiroir-$compartiment";
                         $success_count++;
                     }
                 }
             }
+
+            $stmt = $pdo->prepare("UPDATE location SET storage_type = ? WHERE owner = ? AND casier = ?");
+            $stmt->execute([$storage_type, $user_id, $casier]);
             
             $pdo->commit();
             
@@ -88,196 +91,399 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer des Emplacements par Grille</title>
+    <title>Ajouter des Emplacements en Lot</title>
     <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-muted: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent-indigo: #6366f1;
+            --accent-indigo-light: #e0e7ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
+            --accent-orange: #f97316;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
+            color: var(--text-primary);
+        }
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
             padding: 20px;
         }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
+        .app-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
-            text-align: center;
+            border-radius: var(--radius-xl);
+            padding: 28px 32px 32px;
+            margin: 0 auto 24px;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.2);
+            position: relative;
+            overflow: hidden;
+            max-width: 1480px;
         }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+            border-radius: 50%;
         }
-
-        .nav-buttons {
-            margin: 20px 0;
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
         }
-
-        .nav-buttons a {
-            display: inline-block;
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            width: 52px;
+            height: 52px;
             background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .logout-link {
             color: white;
-            padding: 10px 20px;
             text-decoration: none;
-            border-radius: 25px;
-            margin: 0 10px;
-            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
         }
-
+        .logout-link:hover { background: rgba(255,255,255,0.3); }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-buttons a {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
         .nav-buttons a:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
+            background: rgba(255,255,255,0.28);
+            transform: translateY(-1px);
         }
-
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0); }
+        .btn-indigo  { background: var(--accent-indigo); color: white; }
+        .btn-purple  { background: var(--accent-purple); color: white; }
+        .btn-danger  { background: var(--accent-red); color: white; }
+        .btn-ghost   { background: var(--bg-muted); color: var(--text-secondary); }
+        .btn-ghost:hover { background: #e2e8f0; }
+        .btn-sm      { padding: 6px 11px; font-size: 12px; border-radius: 6px; gap: 4px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-primary { background: var(--accent-green); color: white; }
+        .btn-secondary { background: var(--accent-blue); color: white; }
+        .btn-success { background: var(--accent-green); color: white; }
+        .btn-info { background: var(--accent-teal); color: white; }
         .content {
             padding: 30px;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            max-width: 900px;
+            margin: 0 auto;
         }
-
         .form-group {
             margin-bottom: 20px;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
         }
-
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: all 0.15s;
+            font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-primary);
         }
-
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
         }
-
         .form-group textarea {
             resize: vertical;
             min-height: 100px;
         }
-
         .form-row {
             display: flex;
             gap: 15px;
         }
-
         .form-row .form-group {
             flex: 1;
         }
-
         .required {
-            color: #e74c3c;
+            color: var(--accent-red);
         }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 25px;
-            margin: 10px 5px;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
         .alert {
-            padding: 15px;
+            padding: 14px 18px;
             margin-bottom: 20px;
-            border-radius: 8px;
-            font-weight: bold;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
         }
-
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
-
         .form-actions {
-            text-align: center;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
             margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
         }
-
         .info-box {
-            background: #e3f2fd;
-            border: 1px solid #bbdefb;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            margin-bottom: 24px;
         }
-
         .info-box h3 {
-            color: #1976d2;
+            color: #1e40af;
             margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
         .info-box p {
-            color: #424242;
-            margin-bottom: 5px;
+            color: #374151;
+            margin-bottom: 6px;
+            font-size: 13.5px;
+            line-height: 1.55;
         }
-
         .preview-box {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
+            background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
             margin-top: 20px;
         }
-
         .preview-box h4 {
-            color: #495057;
-            margin-bottom: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            font-size: 14px;
+            font-weight: 800;
         }
-
-        .preview-item {
-            display: inline-block;
-            background: #e9ecef;
-            padding: 5px 10px;
-            margin: 2px;
-            border-radius: 5px;
+        .preview-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .preview-summary-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+        .preview-cabinet-wrap {
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+        .preview-cabinet {
+            min-width: max-content;
+            padding: 16px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
+            border: 2px solid #64748b;
+            box-shadow:
+                0 16px 30px rgba(15, 23, 42, 0.16),
+                inset 0 1px 0 rgba(255,255,255,0.7),
+                inset 0 -4px 8px rgba(0,0,0,0.12);
+        }
+        .preview-cabinet-grid {
+            display: grid;
+            gap: 12px;
+            align-items: start;
+        }
+        .preview-drawer {
+            width: 120px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #cbd5e1;
+            padding: 10px 10px 12px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                0 4px 12px rgba(15, 23, 42, 0.08);
+            position: relative;
+        }
+        .preview-drawer::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -1px;
+            transform: translateX(-50%);
+            width: 44px;
+            height: 7px;
+            border-radius: 0 0 8px 8px;
+            background: linear-gradient(180deg, #64748b 0%, #475569 100%);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.15);
+        }
+        .preview-drawer-head {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #cbd5e1;
+            text-align: center;
+        }
+        .preview-drawer-title {
+            font-size: 0.92rem;
+            font-weight: 900;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+        }
+        .preview-drawer-meta {
+            font-size: 0.68rem;
+            color: #64748b;
+            font-weight: 700;
+        }
+        .preview-slots {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+        .preview-slot {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 26px;
+            padding: 4px 6px;
+            border-radius: 7px;
+            background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #bfdbfe;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
             font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+            font-size: 0.73rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            text-align: center;
+            line-height: 1.15;
+        }
+        .app-footer {
+            margin-top: 2rem;
+            padding: 1.2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85em;
+            display: block;
         }
     </style>
     <script>
@@ -289,29 +495,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const compartimentsParTiroir = parseInt(document.getElementById('compartiments_par_tiroir').value) || 4;
             
             const previewDiv = document.getElementById('preview');
-            let html = '<h4>Aperçu de la grille qui sera créée:</h4>';
-            
-            let totalCount = 0;
+            const totalTiroirs = tiroirsHorizontal * tiroirsVertical;
+            const totalCount = totalTiroirs * compartimentsParTiroir;
+            let html = '<h4>Aperçu de la grappe qui sera créée :</h4>';
+            html += `
+                <div class="preview-summary">
+                    <div class="preview-summary-item">🗄️ Casier : ${casier}</div>
+                    <div class="preview-summary-item">↔️ ${tiroirsHorizontal} tiroirs horizontaux</div>
+                    <div class="preview-summary-item">↕️ ${tiroirsVertical} lignes verticales</div>
+                    <div class="preview-summary-item">🧩 ${compartimentsParTiroir} compartiments / tiroir</div>
+                    <div class="preview-summary-item">📦 ${totalCount} emplacements au total</div>
+                </div>
+                <div class="preview-cabinet-wrap">
+                    <div class="preview-cabinet">
+                        <div class="preview-cabinet-grid" style="grid-template-columns: repeat(${tiroirsHorizontal}, 120px);">
+            `;
+
             for (let ligne = 0; ligne < tiroirsVertical; ligne++) {
                 const tiroirLigne = premierTiroir + (ligne * 10);
-                html += `<div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">`;
-                html += `<strong>Ligne ${ligne + 1}:</strong><br>`;
-                
                 for (let col = 0; col < tiroirsHorizontal; col++) {
                     const tiroir = tiroirLigne + col;
-                    html += `<div style="margin: 5px 0; padding: 5px; background: #e9ecef; border-radius: 3px; display: inline-block; margin-right: 10px;">`;
-                    html += `<strong>${casier}${tiroir}:</strong> `;
-                    
+                    html += `
+                        <div class="preview-drawer">
+                            <div class="preview-drawer-head">
+                                <div class="preview-drawer-title">${casier}${tiroir}</div>
+                                <div class="preview-drawer-meta">Tiroir ${ligne + 1}.${col + 1}</div>
+                            </div>
+                            <div class="preview-slots">
+                    `;
+
                     for (let compartiment = 1; compartiment <= compartimentsParTiroir; compartiment++) {
-                        html += `<span class="preview-item">${casier}${tiroir}-${compartiment}</span>`;
-                        totalCount++;
+                        html += `<div class="preview-slot">${casier}${tiroir}-${compartiment}</div>`;
                     }
-                    html += `</div>`;
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
                 }
-                html += `</div>`;
             }
-            
-            html += `<p style="margin-top: 15px; font-weight: bold; color: #495057; text-align: center;">Total: ${totalCount} emplacements</p>`;
+
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
             previewDiv.innerHTML = html;
         }
         
@@ -326,15 +554,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🔲 Créer par Grille</h1>
+        <div class="app-header">
+            <div class="header-top">
+                <div class="header-title">
+                    <div class="header-icon">🔢</div>
+                    <div>
+                        <h1>Ajouter des Emplacements en Lot</h1>
+                        <p>Génération rapide d'emplacements multiples</p>
+                    </div>
+                </div>
+                <div class="user-chip">
+                    <span>👤 <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'Utilisateur'); ?></span>
+                    <a href="logout.php" class="logout-link">🚪 Déconnexion</a>
+                </div>
+            </div>
             <div class="nav-buttons">
+                <a href="locations.php">← Emplacements</a>
                 <a href="components.php">📦 Composants</a>
-                <a href="locations.php">🗂️ Emplacements</a>
-                <a href="logout.php">🚪 Déconnexion</a>
+                <a href="projects.php">🚀 Projets</a>
+                <a href="settings.php">⚙️ Paramètres</a>
             </div>
         </div>
-
         <div class="content">
             <?php if ($error_message): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error_message); ?></div>
@@ -342,9 +582,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="info-box">
                 <h3>ℹ️ Création par grille</h3>
-                <p><strong>Principe:</strong> Créer une grille de tiroirs avec compartiments organisée en lignes et colonnes</p>
+                <p><strong>Principe:</strong> créer une vraie grappe visuelle de tiroirs, organisée en lignes et colonnes, avec les compartiments de chaque tiroir.</p>
                 <p><strong>Exemple:</strong> Premier tiroir A10, 6 tiroirs horizontaux, 3 lignes verticales, 4 compartiments par tiroir</p>
-                <p><strong>Résultat:</strong></p>
+                <p><strong>Résultat:</strong> l’aperçu ci-dessous reprend exactement la forme de la grappe qui sera créée.</p>
                 <p>• Ligne 1: A10-1, A10-2, A10-3, A10-4, A11-1, A11-2, A11-3, A11-4, etc.</p>
                 <p>• Ligne 2: A20-1, A20-2, A20-3, A20-4, A21-1, A21-2, A21-3, A21-4, etc.</p>
                 <p>• Ligne 3: A30-1, A30-2, A30-3, A30-4, A31-1, A31-2, A31-3, A31-4, etc.</p>
@@ -398,20 +638,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                               placeholder="Description générale pour tous les emplacements..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
                 </div>
 
+                <div class="form-group">
+                    <label for="storage_type">Type de rangement / logo</label>
+                    <select id="storage_type" name="storage_type">
+                        <?php $selectedStorageType = $_POST['storage_type'] ?? 'casier'; ?>
+                        <?php foreach ($storageTypes as $typeKey => $typeMeta): ?>
+                            <option value="<?php echo htmlspecialchars($typeKey); ?>" <?php echo $selectedStorageType === $typeKey ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($typeMeta['icon'] . ' ' . $typeMeta['label']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
                 <div class="preview-box" id="preview">
-                    <!-- Le contenu sera généré par JavaScript -->
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">🚀 Créer tous les Emplacements</button>
-                    <a href="locations.php" class="btn btn-secondary">❌ Annuler</a>
+                    <a href="locations.php" class="btn btn-ghost">❌ Annuler</a>
                 </div>
             </form>
         </div>
+        <app-footer>Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0</app-footer>
     </div>
-
-    <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
-        Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
-    </footer>
 </body>
 </html>

@@ -1,0 +1,58 @@
+# =============================================================
+#  CompoZ'IT — .gitignore  (à placer à la racine du repo)
+#  Rien de ce qui suit ne sera jamais commit sur GitHub
+# =============================================================
+
+# --- CONFIG LOCALE / SECRETS (IMPORTANT !) -------------------------
+config.local.php
+config.local.*.php
+
+# --- DONNÉES UTILISATEURS / UPLOADS --------------------------------
+# Contient images projet, datasheet PDF, ZIP... (NE JAMAIS COMMIT)
+/Projets/
+/projets/
+
+# --- LOGS D'ERREURS / DEBUG ----------------------------------------
+*.log
+logs/
+Logs/
+
+# --- SESSIONS PHP / TEMPORAIRES ------------------------------------
+tmp/
+Tmp/
+*.tmp
+*.swp
+*.swo
+
+# --- XAMPP / WAMP / MAMP specific ----------------------------------
+.htaccess.bak
+httpd.conf.bak
+
+# --- ÉDITEURS / IDE ------------------------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+.classpath
+
+# --- SYSTÈME -------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# --- SCRIPTS LOCAUX (vos chemins Windows personnalisés : C:\Users\...) --------
+# (les versions a commit sans chemin hardcode sont *.template.bat)
+start_server.bat
+setup_auto_images.bat
+test_mysql.bat
+test_session.bat
+
+# --- TESTS / DIVERS  ------------------------------------------------
+phpunit.xml
+.phpunit.result.cache
+.php_cs.cache
+.env
+.env.*

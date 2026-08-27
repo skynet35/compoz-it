@@ -1,8 +1,7 @@
 <?php
-session_start();
+require_once 'session_init.php';
 require_once 'config.php';
 
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php?error=not_logged_in');
     exit();
@@ -11,12 +10,10 @@ if (!isset($_SESSION['user_id'])) {
 $message = '';
 $error = '';
 
-// Traitement des actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'run_auto_assign':
-                // Exécuter le script d'assignation automatique
                 ob_start();
                 include 'auto_assign_package_images.php';
                 $output = ob_get_clean();
@@ -24,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
                 
             case 'preview_changes':
-                // Prévisualiser les changements sans les appliquer
                 try {
                     $pdo = getConnection();
                     $stmt = $pdo->prepare("
@@ -38,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute();
                     $previewData = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     
-                    // Séparer les composants avec et sans images trouvées
                     $previewWithImages = [];
                     $previewWithoutImages = [];
                     
@@ -74,16 +69,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Récupérer les statistiques
 try {
     $pdo = getConnection();
     
-    // Composants sans image
     $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM data WHERE (image_path IS NULL OR image_path = '' OR image_path = 'default.png')");
     $stmt->execute();
     $componentsWithoutImage = $stmt->fetch()['count'];
     
-    // Composants sans image mais avec package
     $stmt = $pdo->prepare("
         SELECT COUNT(*) as count FROM data 
         WHERE (image_path IS NULL OR image_path = '' OR image_path = 'default.png') 
@@ -92,7 +84,6 @@ try {
     $stmt->execute();
     $componentsWithPackage = $stmt->fetch()['count'];
     
-    // Images disponibles dans le dossier img/
     $imageDir = __DIR__ . '/img/';
     $availableImages = [];
     if (is_dir($imageDir)) {
@@ -116,42 +107,207 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionnaire d'Images de Packages - Gestion des Composants</title>
     <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-muted: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent-indigo: #6366f1;
+            --accent-indigo-light: #e0e7ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
+            --accent-orange: #f97316;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
+            color: var(--text-primary);
+        }
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
             padding: 20px;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
+        .app-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
-            text-align: center;
+            border-radius: var(--radius-xl);
+            padding: 28px 32px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+            border-radius: 50%;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .logout-link {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .logout-link:hover { background: rgba(255,255,255,0.3); }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-buttons a {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-buttons a:hover {
+            background: rgba(255,255,255,0.28);
+            transform: translateY(-1px);
+        }
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0); }
+        .btn-indigo  { background: var(--accent-indigo); color: white; }
+        .btn-purple  { background: var(--accent-purple); color: white; }
+        .btn-danger  { background: var(--accent-red); color: white; }
+        .btn-ghost   { background: var(--bg-muted); color: var(--text-secondary); }
+        .btn-ghost:hover { background: #e2e8f0; }
+        .btn-sm      { padding: 6px 11px; font-size: 12px; border-radius: 6px; gap: 4px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .btn-primary {
+            background: var(--accent-indigo);
+            color: white;
         }
 
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+        .btn-secondary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--accent-teal);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--accent-amber);
+            color: #212529;
         }
 
         .content {
             padding: 30px;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
         }
 
         .stats-grid {
@@ -194,40 +350,6 @@ try {
             color: #333;
             margin-bottom: 15px;
             font-size: 1.3em;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin: 5px;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-info {
-            background: #17a2b8;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .alert {
@@ -301,11 +423,27 @@ try {
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🖼️ Gestionnaire d'Images de Packages</h1>
-            <p>Assignation automatique des images aux composants</p>
+        <div class="app-header">
+        <div class="header-top">
+            <div class="header-title">
+                <div class="header-icon">🖼️</div>
+                <div>
+                    <h1>Gestion des Images de Boîtiers</h1>
+                    <p>Associez les images aux packages (DIP, SOIC, SOT…)</p>
+                </div>
+            </div>
+            <div class="user-chip">
+                <span>👤 <?php echo htmlspecialchars($_SESSION['user_email'] ?? 'Utilisateur'); ?></span>
+                <a href="logout.php" class="logout-link">🚪 Déconnexion</a>
+            </div>
         </div>
-
+        <div class="nav-buttons">
+            <a href="components.php">📦 Composants</a>
+            <a href="create_component.php">➕ Créer</a>
+            <a href="projects.php">🚀 Projets</a>
+            <a href="settings.php">⚙️ Paramètres</a>
+        </div>
+        </div>
         <div class="content">
             <?php if ($message): ?>
                 <div class="alert alert-success">
@@ -319,7 +457,6 @@ try {
                 </div>
             <?php endif; ?>
 
-            <!-- Statistiques -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-number"><?php echo $componentsWithoutImage; ?></div>
@@ -335,7 +472,6 @@ try {
                 </div>
             </div>
 
-            <!-- Actions -->
             <div class="action-section">
                 <h3>🚀 Actions</h3>
                 <form method="post" style="display: inline;">
@@ -357,7 +493,6 @@ try {
                 </a>
             </div>
 
-            <!-- Prévisualisation -->
             <?php if (isset($previewWithImages) || isset($previewWithoutImages)): ?>
                 <div class="action-section">
                     <h3>👁️ Prévisualisation des changements</h3>
@@ -421,7 +556,6 @@ try {
                 </div>
             <?php endif; ?>
 
-            <!-- Images disponibles -->
             <div class="action-section">
                 <h3>🖼️ Images de packages disponibles</h3>
                 <div class="images-grid">
@@ -434,10 +568,9 @@ try {
                 </div>
             </div>
         </div>
+        <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
+            Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
+        </footer>
     </div>
-
-    <footer style="margin-top: 2rem; padding: 1rem; text-align: center; border-top: 1px solid #ddd; background-color: #f8f9fa; color: #666; font-size: 0.9em;">
-        Créé par Jérémy Leroy - Version 1.0 - Copyright © 2025 - Tous droits réservés selon les termes de la licence Creative Commons CC BY-NC-SA 3.0
-    </footer>
 </body>
 </html>
